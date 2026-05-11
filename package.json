@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "split-data": "node scripts/split-data.js",
+    "prebuild": "npm run split-data",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "serve": "node scripts/server.cjs",

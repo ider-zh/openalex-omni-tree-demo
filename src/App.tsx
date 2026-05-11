@@ -11,13 +11,14 @@ function App() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [topicCache, setTopicCache] = useState<Map<string, TreeNode[]>>(new Map());
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const [treeRes, searchRes] = await Promise.all([
-          fetch('/data/topics-tree.json').then(r => {
-            if (!r.ok) throw new Error('Failed to load tree data');
+          fetch('/data/tree-skeleton.json').then(r => {
+            if (!r.ok) throw new Error('Failed to load tree skeleton');
             return r.json();
           }),
           fetch('/data/search-index.json').then(r => {
@@ -37,6 +38,19 @@ function App() {
 
     loadData();
   }, []);
+
+  const loadTopicChildren = useCallback(async (subfieldId: string, topicFile: string): Promise<TreeNode[]> => {
+    if (topicCache.has(topicFile)) {
+      return topicCache.get(topicFile)!;
+    }
+
+    const response = await fetch(topicFile);
+    if (!response.ok) throw new Error(`Failed to load topics for ${subfieldId}`);
+    const topics = await response.json();
+
+    setTopicCache(prev => new Map(prev).set(topicFile, topics));
+    return topics;
+  }, [topicCache]);
 
   const searchTopics = useCallback((query: string) => {
     if (!query.trim()) {
@@ -125,6 +139,8 @@ function App() {
           defaultExpandLevel={searchResults.length > 0 ? undefined : 2}
           expandedNodes={expandedNodes}
           searchResults={searchResults}
+          loadTopicChildren={loadTopicChildren}
+          topicCache={topicCache}
         />
       </main>
     </div>

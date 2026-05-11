@@ -6,6 +6,8 @@ export interface TreeNode {
   works_count?: number;
   keywords?: string[];
   children: TreeNode[];
+  _topic_file?: string;
+  topic_count?: number;
 }
 
 export interface SearchIndexItem {

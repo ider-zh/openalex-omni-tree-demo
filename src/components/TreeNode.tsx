@@ -7,6 +7,8 @@ interface TreeNodeComponentProps {
   defaultExpandLevel?: number;
   expandedNodes?: Set<string>;
   searchResults?: any[];
+  loadTopicChildren?: (subfieldId: string, topicFile: string) => Promise<TreeNode[]>;
+  topicCache?: Map<string, TreeNode[]>;
 }
 
 const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
@@ -14,7 +16,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   level,
   defaultExpandLevel,
   expandedNodes,
-  searchResults
+  searchResults,
+  loadTopicChildren,
+  topicCache
 }) => {
   const [isExpanded, setIsExpanded] = useState(() => {
     if (expandedNodes && expandedNodes.has(node.name)) {
@@ -22,16 +26,33 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     }
     return defaultExpandLevel ? level < defaultExpandLevel : false;
   });
+  const [children, setChildren] = useState<TreeNode[]>(node.children || []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const hasChildren = node.children && node.children.length > 0;
+  const hasTopicFile = (node as any)._topic_file && loadTopicChildren;
+  const hasChildren = children.length > 0 || hasTopicFile;
   
-  // Check if this node is in the search results path
   const isHighlighted = searchResults && searchResults.some(r => 
     r.path.includes(node.name) || r.id === node.id
   );
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+  const toggleExpand = async () => {
+    const newExpanded = !isExpanded;
+    setIsExpanded(newExpanded);
+
+    if (newExpanded && hasTopicFile && !isLoaded) {
+      setIsLoading(true);
+      try {
+        const topicChildren = await loadTopicChildren!(node.id, (node as any)._topic_file);
+        setChildren(topicChildren);
+        setIsLoaded(true);
+      } catch (err) {
+        console.error('Failed to load topic children:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   const getIcon = () => {
@@ -59,7 +80,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
       >
         {hasChildren && (
           <span className="expand-icon">
-            {isExpanded ? '▼' : '▶'}
+            {isLoading ? '⏳' : isExpanded ? '▼' : '▶'}
           </span>
         )}
         <span className="node-icon">{getIcon()}</span>
@@ -71,7 +92,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
 
       {isExpanded && hasChildren && (
         <div className="tree-children">
-          {node.children.map((child) => (
+          {children.map((child) => (
             <TreeNodeComponent
               key={child.id}
               node={child}
@@ -79,6 +100,8 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
               defaultExpandLevel={defaultExpandLevel}
               expandedNodes={expandedNodes}
               searchResults={searchResults}
+              loadTopicChildren={loadTopicChildren}
+              topicCache={topicCache}
             />
           ))}
         </div>

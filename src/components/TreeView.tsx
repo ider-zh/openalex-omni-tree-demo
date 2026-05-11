@@ -6,13 +6,17 @@ interface TreeViewProps {
   defaultExpandLevel?: number;
   expandedNodes?: Set<string>;
   searchResults?: any[];
+  loadTopicChildren?: (subfieldId: string, topicFile: string) => Promise<TreeNode[]>;
+  topicCache?: Map<string, TreeNode[]>;
 }
 
 const TreeView: React.FC<TreeViewProps> = ({
   tree,
   defaultExpandLevel = 2,
   expandedNodes,
-  searchResults
+  searchResults,
+  loadTopicChildren,
+  topicCache
 }) => {
   return (
     <div className="tree-view">
@@ -22,6 +26,8 @@ const TreeView: React.FC<TreeViewProps> = ({
         defaultExpandLevel={defaultExpandLevel}
         expandedNodes={expandedNodes}
         searchResults={searchResults}
+        loadTopicChildren={loadTopicChildren}
+        topicCache={topicCache}
       />
     </div>
   );
