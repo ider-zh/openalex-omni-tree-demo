@@ -715,11 +715,9 @@
                 r.path.includes(node.name) || r.id === node.id
             );
 
-            const toggleExpand = async () => {
-                const newExpanded = !isExpanded;
-                setIsExpanded(newExpanded);
-
-                if (newExpanded && hasTopicFile && !isLoaded) {
+            // Load topic children when expanded via search
+            const loadTopicChildren = async () => {
+                if (hasTopicFile && !isLoaded && !isLoading) {
                     setIsLoading(true);
                     try {
                         if (topicCache.has(node._topic_file)) {
@@ -738,6 +736,22 @@
                     }
                 }
             };
+
+            const toggleExpand = async () => {
+                const newExpanded = !isExpanded;
+                setIsExpanded(newExpanded);
+
+                if (newExpanded && hasTopicFile && !isLoaded) {
+                    await loadTopicChildren();
+                }
+            };
+
+            // Auto-load topic children when node is expanded by search
+            useEffect(() => {
+                if (isExpanded && hasTopicFile && !isLoaded) {
+                    loadTopicChildren();
+                }
+            }, [isExpanded]);
 
             const getIcon = () => {
                 switch (node.type) {
