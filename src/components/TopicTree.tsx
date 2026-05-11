@@ -14,7 +14,7 @@ interface TreeNodeProps {
 }
 
 function TreeNode({ topic, isSelected, onSelect }: TreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="tree-node">
@@ -34,13 +34,13 @@ function TreeNode({ topic, isSelected, onSelect }: TreeNodeProps) {
       {isExpanded && (
         <div className="tree-node-content">
           <div className="topic-info">
-            <span className="info-item">Domain: {topic.domain.display_name}</span>
-            <span className="info-item">Field: {topic.field.display_name}</span>
-            <span className="info-item">Subfield: {topic.subfield.display_name}</span>
+            {topic.domain && <span className="info-item">Domain: {topic.domain}</span>}
+            {topic.field && <span className="info-item">Field: {topic.field}</span>}
+            {topic.subfield && <span className="info-item">Subfield: {topic.subfield}</span>}
           </div>
-          {topic.keywords.length > 0 && (
+          {topic.keywords && topic.keywords.length > 0 && (
             <div className="keywords">
-              {topic.keywords.slice(0, 5).map((keyword, index) => (
+              {topic.keywords.slice(0, 5).map((keyword: string, index: number) => (
                 <span key={index} className="keyword-tag">{keyword}</span>
               ))}
             </div>
