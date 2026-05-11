@@ -513,7 +513,7 @@
     <script type="importmap">
     {
         "imports": {
-            "tree-data": "/data/topics-tree.json",
+            "tree-data": "/data/tree-skeleton.json",
             "search-data": "/data/search-index.json"
         }
     }
@@ -674,7 +674,7 @@
         async function loadData() {
             try {
                 const [treeRes, searchRes] = await Promise.all([
-                    fetch('/data/topics-tree.json'),
+                    fetch('/data/tree-skeleton.json'),
                     fetch('/data/search-index.json')
                 ]);
                 treeData = await treeRes.json();
@@ -685,6 +685,9 @@
             }
         }
 
+        // Topic children cache for lazy loading
+        const topicCache = new Map();
+
         // TreeNode Component
         function TreeNodeComponent({ node, level, defaultExpandLevel, expandedNodes, searchResults, searchQuery, t }) {
             // Use node.id as key to force re-render when expandedNodes changes
@@ -694,6 +697,9 @@
                 }
                 return defaultExpandLevel ? level < defaultExpandLevel : false;
             });
+            const [children, setChildren] = useState(node.children || []);
+            const [isLoading, setIsLoading] = useState(false);
+            const [isLoaded, setIsLoaded] = useState(false);
 
             // Update expansion state when expandedNodes changes
             useEffect(() => {
@@ -702,14 +708,35 @@
                 }
             }, [expandedNodes, node.name]);
 
-            const hasChildren = node.children && node.children.length > 0;
+            const hasTopicFile = node._topic_file;
+            const hasChildren = children.length > 0 || hasTopicFile;
             
             const isHighlighted = searchResults && searchResults.some(r => 
                 r.path.includes(node.name) || r.id === node.id
             );
 
-            const toggleExpand = () => {
-                setIsExpanded(!isExpanded);
+            const toggleExpand = async () => {
+                const newExpanded = !isExpanded;
+                setIsExpanded(newExpanded);
+
+                if (newExpanded && hasTopicFile && !isLoaded) {
+                    setIsLoading(true);
+                    try {
+                        if (topicCache.has(node._topic_file)) {
+                            setChildren(topicCache.get(node._topic_file));
+                        } else {
+                            const res = await fetch(node._topic_file);
+                            const topicChildren = await res.json();
+                            topicCache.set(node._topic_file, topicChildren);
+                            setChildren(topicChildren);
+                        }
+                        setIsLoaded(true);
+                    } catch (err) {
+                        console.error('Failed to load topic children:', err);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
             };
 
             const getIcon = () => {
@@ -768,7 +795,7 @@
             const filteredChildren = React.useMemo(() => {
                 // If no search results, show all children normally
                 if (!hasChildren || !searchResults || searchResults.length === 0) {
-                    return node.children || [];
+                    return children || [];
                 }
 
                 // Build sets for matching topics and valid paths
@@ -834,7 +861,7 @@
                     }
                 });
 
-                return (node.children || []).filter(child => {
+                return (children || []).filter(child => {
                     // For topic children, check by ID
                     if (child.type === 'topic') {
                         return topicIds.has(child.id);
@@ -842,7 +869,7 @@
                     // For non-topic children, check by name
                     return validChildNames.has(child.name);
                 });
-            }, [node.children, searchResults, node.name, node.type, level]);
+            }, [children, searchResults, node.name, node.type, level]);
 
             return React.createElement('div', {
                 className: 'tree-node',
@@ -855,7 +882,7 @@
                     role: hasChildren ? 'button' : undefined,
                     tabIndex: 0
                 },
-                    hasChildren && React.createElement('span', { className: 'expand-icon' }, isExpanded ? '▼' : '▶'),
+                    hasChildren && React.createElement('span', { className: 'expand-icon' }, isLoading ? '⏳' : isExpanded ? '▼' : '▶'),
                     React.createElement('span', { className: 'node-icon' }, getIcon()),
                     React.createElement('span', { className: 'node-name' }, highlightText(node.name, searchQuery)),
                     React.createElement('span', { className: 'node-stats' },

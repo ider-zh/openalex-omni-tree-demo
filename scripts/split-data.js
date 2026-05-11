@@ -5,10 +5,28 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '..', 'public', 'data');
 
+const skeletonFile = path.join(dataDir, 'tree-skeleton.json');
+const topicsDir = path.join(dataDir, 'topics');
 const treeFile = path.join(dataDir, 'topics-tree.json');
+
+// If skeleton already exists and has topic files, skip
+if (fs.existsSync(skeletonFile) && fs.existsSync(topicsDir)) {
+  const topicCount = fs.readdirSync(topicsDir).length;
+  if (topicCount > 0) {
+    console.log(`Data already split: ${topicCount} topic files found. Skipping.`);
+    console.log(`Skeleton: ${skeletonFile} (${(fs.statSync(skeletonFile).size / 1024).toFixed(1)} KB)`);
+    console.log('Done!');
+    process.exit(0);
+  }
+}
+
+if (!fs.existsSync(treeFile)) {
+  console.error('Error: topics-tree.json not found. Run npm run process-data first.');
+  process.exit(1);
+}
+
 const tree = JSON.parse(fs.readFileSync(treeFile, 'utf8'));
 
-const topicsDir = path.join(dataDir, 'topics');
 if (!fs.existsSync(topicsDir)) {
   fs.mkdirSync(topicsDir, { recursive: true });
 }
@@ -48,7 +66,6 @@ function getSafeFileName(id) {
 
 const skeleton = buildSkeleton(tree);
 
-const skeletonFile = path.join(dataDir, 'tree-skeleton.json');
 fs.writeFileSync(skeletonFile, JSON.stringify(skeleton), 'utf8');
 
 // Count files
