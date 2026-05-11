@@ -1,0 +1,49 @@
+{
+  "name": "openalex-topics-tree",
+  "version": "1.0.0",
+  "description": "Interactive hierarchical tree visualization of OpenAlex academic topics with multi-language support",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "serve": "node scripts/server.cjs",
+    "crawl": "node scripts/crawler.js",
+    "process-data": "node scripts/process-data.js",
+    "data": "npm run crawl && npm run process-data",
+    "validate": "node scripts/validate-data.js",
+    "check-data": "node scripts/check-data.js",
+    "verify-api": "node scripts/verify-api-consistency.js",
+    "test": "echo \"Running tests...\" && node tests/simple-verify.js",
+    "clean": "rm -rf dist/ node_modules/",
+    "clean:win": "rmdir /s /q dist node_modules"
+  },
+  "keywords": [
+    "openalex",
+    "academic-topics",
+    "tree-visualization",
+    "research",
+    "scholarly-works"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/openalex-topics-tree"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
