@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TreeNode, SearchResult } from './types';
+import { TreeNode, SearchIndexItem, SearchResult } from './types';
+import { parseCSV } from './utils/csv-parser';
 import TreeView from './components/TreeView';
 import SearchBar from './components/SearchBar';
 
 function App() {
   const [tree, setTree] = useState<TreeNode | null>(null);
-  const [searchData, setSearchData] = useState<any[]>([]);
+  const [searchData, setSearchData] = useState<SearchIndexItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -16,19 +17,29 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [treeRes, searchRes] = await Promise.all([
+        const [treeRes, searchCsvText] = await Promise.all([
           fetch('/data/tree-skeleton.json').then(r => {
             if (!r.ok) throw new Error('Failed to load tree skeleton');
             return r.json();
           }),
-          fetch('/data/search-index.json').then(r => {
+          fetch('/data/search-index.csv').then(r => {
             if (!r.ok) throw new Error('Failed to load search data');
-            return r.json();
+            return r.text();
           }),
         ]);
 
+        // 解析 CSV 搜索索引
+        const searchRows = parseCSV(searchCsvText).map(row => ({
+          id: row.id,
+          name: row.name,
+          domain: row.domain,
+          field: row.field,
+          subfield: row.subfield,
+          works_count: parseInt(row.works_count, 10) || 0,
+        }));
+
         setTree(treeRes);
-        setSearchData(searchRes);
+        setSearchData(searchRows);
         setLoading(false);
       } catch (err: any) {
         setError(err.message || 'Failed to load data');
@@ -46,7 +57,16 @@ function App() {
 
     const response = await fetch(topicFile);
     if (!response.ok) throw new Error(`Failed to load topics for ${subfieldId}`);
-    const topics = await response.json();
+
+    // 解析 CSV topic 文件
+    const csvText = await response.text();
+    const topics: TreeNode[] = parseCSV(csvText).map(row => ({
+      id: row.id,
+      name: row.name,
+      type: 'topic' as const,
+      works_count: parseInt(row.works_count, 10) || 0,
+      children: [],
+    }));
 
     setTopicCache(prev => new Map(prev).set(topicFile, topics));
     return topics;
@@ -61,12 +81,13 @@ function App() {
 
     setIsSearching(true);
     const lowerQuery = query.toLowerCase();
-    
+
     const matches: SearchResult[] = [];
-    
-    searchData.forEach((item: any) => {
-      const searchText = `${item.name} ${item.description} ${item.keywords?.join(' ')} ${item.domain} ${item.field} ${item.subfield}`.toLowerCase();
-      
+
+    searchData.forEach((item) => {
+      // 仅搜索 name + 层级路径（精简版，无 description/keywords）
+      const searchText = `${item.name} ${item.domain} ${item.field} ${item.subfield}`.toLowerCase();
+
       if (searchText.includes(lowerQuery)) {
         const path = [item.domain, item.field, item.subfield, item.name].filter(Boolean);
         matches.push({
@@ -76,9 +97,7 @@ function App() {
             id: item.id,
             name: item.name,
             type: 'topic',
-            description: item.description,
             works_count: item.works_count,
-            keywords: item.keywords,
             children: []
           }
         });
@@ -123,7 +142,7 @@ function App() {
       <div className="search-container">
         <SearchBar
           onSearch={searchTopics}
-          placeholder="Search topics, keywords, domains..."
+          placeholder="Search topics, domains, fields..."
         />
         {isSearching && <div className="searching-indicator">Searching...</div>}
         {searchResults.length > 0 && !isSearching && (
@@ -134,7 +153,7 @@ function App() {
       </div>
 
       <main className="main-content">
-        <TreeView 
+        <TreeView
           tree={tree!}
           defaultExpandLevel={searchResults.length > 0 ? undefined : 2}
           expandedNodes={expandedNodes}

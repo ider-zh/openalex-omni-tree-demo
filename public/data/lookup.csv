@@ -1,0 +1,275 @@
+type,id,name
+domain,D1,Physical Sciences
+domain,D2,Social Sciences
+domain,D3,Life Sciences
+domain,D4,Health Sciences
+field,F1,Engineering
+field,F2,Physics and Astronomy
+field,F3,Computer Science
+field,F4,Environmental Science
+field,F5,Materials Science
+field,F6,Earth and Planetary Sciences
+field,F7,Chemistry
+field,F8,Mathematics
+field,F9,Energy
+field,F10,Chemical Engineering
+field,F11,"Economics, Econometrics and Finance"
+field,F12,Arts and Humanities
+field,F13,Social Sciences
+field,F14,Decision Sciences
+field,F15,Psychology
+field,F16,"Business, Management and Accounting"
+field,F17,Agricultural and Biological Sciences
+field,F18,"Biochemistry, Genetics and Molecular Biology"
+field,F19,Neuroscience
+field,F20,Immunology and Microbiology
+field,F21,"Pharmacology, Toxicology and Pharmaceutics"
+field,F22,Medicine
+field,F23,Health Professions
+field,F24,Nursing
+field,F25,Dentistry
+field,F26,Veterinary
+subfield,S1,Aerospace Engineering
+subfield,S2,Electrical and Electronic Engineering
+subfield,S3,Computational Mechanics
+subfield,S4,Ocean Engineering
+subfield,S5,Mechanical Engineering
+subfield,S6,Civil and Structural Engineering
+subfield,S7,Industrial and Manufacturing Engineering
+subfield,S8,Biomedical Engineering
+subfield,S9,Control and Systems Engineering
+subfield,S10,Mechanics of Materials
+subfield,S11,"Safety, Risk, Reliability and Quality"
+subfield,S12,Building and Construction
+subfield,S13,Media Technology
+subfield,S14,Architecture
+subfield,S15,Automotive Engineering
+subfield,S16,General Engineering
+subfield,S17,Nuclear and High Energy Physics
+subfield,S18,Astronomy and Astrophysics
+subfield,S19,"Atomic and Molecular Physics, and Optics"
+subfield,S20,Condensed Matter Physics
+subfield,S21,Instrumentation
+subfield,S22,Radiation
+subfield,S23,Statistical and Nonlinear Physics
+subfield,S24,Acoustics and Ultrasonics
+subfield,S25,Artificial Intelligence
+subfield,S26,Information Systems
+subfield,S27,Computer Science Applications
+subfield,S28,Computer Vision and Pattern Recognition
+subfield,S29,Computer Networks and Communications
+subfield,S30,Hardware and Architecture
+subfield,S31,Computational Theory and Mathematics
+subfield,S32,Signal Processing
+subfield,S33,Computer Graphics and Computer-Aided Design
+subfield,S34,Human-Computer Interaction
+subfield,S35,Software
+subfield,S36,Ecological Modeling
+subfield,S37,"Management, Monitoring, Policy and Law"
+subfield,S38,Environmental Engineering
+subfield,S39,Environmental Chemistry
+subfield,S40,Global and Planetary Change
+subfield,S41,Nature and Landscape Conservation
+subfield,S42,Ecology
+subfield,S43,Water Science and Technology
+subfield,S44,"Health, Toxicology and Mutagenesis"
+subfield,S45,Pollution
+subfield,S46,Materials Chemistry
+subfield,S47,Biomaterials
+subfield,S48,"Surfaces, Coatings and Films"
+subfield,S49,General Materials Science
+subfield,S50,Ceramics and Composites
+subfield,S51,Polymers and Plastics
+subfield,S52,"Electronic, Optical and Magnetic Materials"
+subfield,S53,Metals and Alloys
+subfield,S54,Paleontology
+subfield,S55,Atmospheric Science
+subfield,S56,Geophysics
+subfield,S57,Oceanography
+subfield,S58,Geology
+subfield,S59,Earth-Surface Processes
+subfield,S60,Geochemistry and Petrology
+subfield,S61,Space and Planetary Science
+subfield,S62,Physical and Theoretical Chemistry
+subfield,S63,Organic Chemistry
+subfield,S64,Spectroscopy
+subfield,S65,Electrochemistry
+subfield,S66,Inorganic Chemistry
+subfield,S67,Analytical Chemistry
+subfield,S68,Theoretical Computer Science
+subfield,S69,Geometry and Topology
+subfield,S70,Statistics and Probability
+subfield,S71,Applied Mathematics
+subfield,S72,Modeling and Simulation
+subfield,S73,Mathematical Physics
+subfield,S74,Algebra and Number Theory
+subfield,S75,Numerical Analysis
+subfield,S76,Discrete Mathematics and Combinatorics
+subfield,S77,Computational Mathematics
+subfield,S78,"Renewable Energy, Sustainability and the Environment"
+subfield,S79,General Energy
+subfield,S80,Energy Engineering and Power Technology
+subfield,S81,Fuel Technology
+subfield,S82,Nuclear Energy and Engineering
+subfield,S83,Bioengineering
+subfield,S84,Fluid Flow and Transfer Processes
+subfield,S85,Catalysis
+subfield,S86,Filtration and Separation
+subfield,S87,Chemical Health and Safety
+subfield,S88,Process Chemistry and Technology
+subfield,S89,Economics and Econometrics
+subfield,S90,"General Economics, Econometrics and Finance"
+subfield,S91,Finance
+subfield,S92,Philosophy
+subfield,S93,Literature and Literary Theory
+subfield,S94,Music
+subfield,S95,Museology
+subfield,S96,Religious studies
+subfield,S97,History
+subfield,S98,Classics
+subfield,S99,History and Philosophy of Science
+subfield,S100,Language and Linguistics
+subfield,S101,Archeology
+subfield,S102,Conservation
+subfield,S103,Visual Arts and Performing Arts
+subfield,S104,General Arts and Humanities
+subfield,S105,Sociology and Political Science
+subfield,S106,Anthropology
+subfield,S107,Education
+subfield,S108,Political Science and International Relations
+subfield,S109,General Social Sciences
+subfield,S110,Law
+subfield,S111,Urban Studies
+subfield,S112,Cultural Studies
+subfield,S113,Transportation
+subfield,S114,Demography
+subfield,S115,Public Administration
+subfield,S116,Library and Information Sciences
+subfield,S117,Development
+subfield,S118,Communication
+subfield,S119,"Geography, Planning and Development"
+subfield,S120,Linguistics and Language
+subfield,S121,Human Factors and Ergonomics
+subfield,S122,Gender Studies
+subfield,S123,Health
+subfield,S124,Safety Research
+subfield,S125,Life-span and Life-course Studies
+subfield,S126,Information Systems and Management
+subfield,S127,"Statistics, Probability and Uncertainty"
+subfield,S128,Management Science and Operations Research
+subfield,S129,General Decision Sciences
+subfield,S130,Clinical Psychology
+subfield,S131,General Psychology
+subfield,S132,Social Psychology
+subfield,S133,Experimental and Cognitive Psychology
+subfield,S134,Developmental and Educational Psychology
+subfield,S135,Neuropsychology and Physiological Psychology
+subfield,S136,Applied Psychology
+subfield,S137,Strategy and Management
+subfield,S138,Accounting
+subfield,S139,Management Information Systems
+subfield,S140,Management of Technology and Innovation
+subfield,S141,Organizational Behavior and Human Resource Management
+subfield,S142,Marketing
+subfield,S143,Industrial relations
+subfield,S144,Business and International Management
+subfield,S145,"Tourism, Leisure and Hospitality Management"
+subfield,S146,Plant Science
+subfield,S147,Insect Science
+subfield,S148,"Ecology, Evolution, Behavior and Systematics"
+subfield,S149,Aquatic Science
+subfield,S150,Animal Science and Zoology
+subfield,S151,Food Science
+subfield,S152,Soil Science
+subfield,S153,Agronomy and Crop Science
+subfield,S154,General Agricultural and Biological Sciences
+subfield,S155,Forestry
+subfield,S156,Horticulture
+subfield,S157,Biophysics
+subfield,S158,Molecular Biology
+subfield,S159,Genetics
+subfield,S160,Cell Biology
+subfield,S161,Structural Biology
+subfield,S162,Clinical Biochemistry
+subfield,S163,Cancer Research
+subfield,S164,Molecular Medicine
+subfield,S165,Biochemistry
+subfield,S166,Physiology
+subfield,S167,Biotechnology
+subfield,S168,Aging
+subfield,S169,Endocrinology
+subfield,S170,Developmental Biology
+subfield,S171,Cellular and Molecular Neuroscience
+subfield,S172,Neurology
+subfield,S173,Cognitive Neuroscience
+subfield,S174,Behavioral Neuroscience
+subfield,S175,Endocrine and Autonomic Systems
+subfield,S176,Sensory Systems
+subfield,S177,Developmental Neuroscience
+subfield,S178,Biological Psychiatry
+subfield,S179,Immunology
+subfield,S180,Virology
+subfield,S181,Parasitology
+subfield,S182,Microbiology
+subfield,S183,Applied Microbiology and Biotechnology
+subfield,S184,Pharmaceutical Science
+subfield,S185,Pharmacology
+subfield,S186,Toxicology
+subfield,S187,Drug Discovery
+subfield,S188,"Pediatrics, Perinatology and Child Health"
+subfield,S189,Reproductive Medicine
+subfield,S190,Surgery
+subfield,S191,Obstetrics and Gynecology
+subfield,S192,"Public Health, Environmental and Occupational Health"
+subfield,S193,Epidemiology
+subfield,S194,Anatomy
+subfield,S195,Infectious Diseases
+subfield,S196,Cardiology and Cardiovascular Medicine
+subfield,S197,Complementary and alternative medicine
+subfield,S198,"Radiology, Nuclear Medicine and Imaging"
+subfield,S199,Orthopedics and Sports Medicine
+subfield,S200,Pulmonary and Respiratory Medicine
+subfield,S201,Internal Medicine
+subfield,S202,Psychiatry and Mental health
+subfield,S203,Dermatology
+subfield,S204,Oncology
+subfield,S205,Pathology and Forensic Medicine
+subfield,S206,Ophthalmology
+subfield,S207,Hepatology
+subfield,S208,Geriatrics and Gerontology
+subfield,S209,Health Informatics
+subfield,S210,Immunology and Allergy
+subfield,S211,Rheumatology
+subfield,S212,"Endocrinology, Diabetes and Metabolism"
+subfield,S213,Emergency Medicine
+subfield,S214,Rehabilitation
+subfield,S215,Otorhinolaryngology
+subfield,S216,Hematology
+subfield,S217,Nephrology
+subfield,S218,Anesthesiology and Pain Medicine
+subfield,S219,Urology
+subfield,S220,Gastroenterology
+subfield,S221,Transplantation
+subfield,S222,Critical Care and Intensive Care Medicine
+subfield,S223,Family Practice
+subfield,S224,General Health Professions
+subfield,S225,Radiological and Ultrasound Technology
+subfield,S226,Pharmacy
+subfield,S227,Emergency Medical Services
+subfield,S228,"Physical Therapy, Sports Therapy and Rehabilitation"
+subfield,S229,Occupational Therapy
+subfield,S230,Speech and Hearing
+subfield,S231,Medical Laboratory Technology
+subfield,S232,Health Information Management
+subfield,S233,Complementary and Manual Therapy
+subfield,S234,Medical Terminology
+subfield,S235,Nutrition and Dietetics
+subfield,S236,"Issues, ethics and legal aspects"
+subfield,S237,Leadership and Management
+subfield,S238,Research and Theory
+subfield,S239,Periodontics
+subfield,S240,Oral Surgery
+subfield,S241,Orthodontics
+subfield,S242,General Dentistry
+subfield,S243,Small Animals
+subfield,S244,Equine

@@ -2,19 +2,16 @@ export interface TreeNode {
   id: string;
   name: string;
   type: 'root' | 'domain' | 'field' | 'subfield' | 'topic';
-  description?: string;
   works_count?: number;
-  keywords?: string[];
   children: TreeNode[];
   _topic_file?: string;
   topic_count?: number;
 }
 
+/** CSV 搜索索引行 */
 export interface SearchIndexItem {
   id: string;
   name: string;
-  description?: string;
-  keywords?: string[];
   domain: string;
   field: string;
   subfield: string;
@@ -27,20 +24,9 @@ export interface SearchResult {
   node: TreeNode;
 }
 
-export interface Topic {
+/** CSV topic 行 */
+export interface TopicRow {
   id: string;
-  display_name: string;
-  description?: string;
-  keywords?: string[];
-  works_count?: number;
-  domain?: string;
-  field?: string;
-  subfield?: string;
-}
-
-export interface ApiResponse {
-  results: Topic[];
-  meta: {
-    count: number;
-  };
+  name: string;
+  works_count: number;
 }

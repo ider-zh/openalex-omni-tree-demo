@@ -514,7 +514,8 @@
     {
         "imports": {
             "tree-data": "/data/tree-skeleton.json",
-            "search-data": "/data/search-index.json"
+            "lookup-data": "/data/lookup.csv",
+            "search-data": "/data/search-index.csv"
         }
     }
     </script>
@@ -667,18 +668,74 @@
             return { theme, setTheme };
         }
 
+        // CSV 解析器 (RFC 4180)
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = parseCSVLine(lines[0]);
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = parseCSVLine(line);
+                const row = {};
+                headers.forEach((h, i) => { row[h] = values[i] || ''; });
+                return row;
+            });
+        }
+        function parseCSVLine(line) {
+            const fields = [];
+            let i = 0;
+            while (i <= line.length) {
+                if (i === line.length) { break; }
+                if (line[i] === '"') {
+                    let val = ''; i++;
+                    while (i < line.length) {
+                        const qi = line.indexOf('"', i);
+                        if (qi === -1) { val += line.slice(i); i = line.length; break; }
+                        if (qi + 1 < line.length && line[qi + 1] === '"') { val += line.slice(i, qi) + '"'; i = qi + 2; }
+                        else { val += line.slice(i, qi); i = qi + 1; break; }
+                    }
+                    fields.push(val);
+                    if (i < line.length && line[i] === ',') i++;
+                } else {
+                    const ci = line.indexOf(',', i);
+                    if (ci === -1) { fields.push(line.slice(i)); break; }
+                    else { fields.push(line.slice(i, ci)); i = ci + 1; }
+                }
+            }
+            return fields;
+        }
+
         // Fetch data
         let treeData = null;
         let searchData = null;
+        let lookupMap = null; // { 'D1': 'Physical Sciences', 'F1': 'Engineering', 'S1': 'Aerospace Engineering', ... }
 
         async function loadData() {
             try {
-                const [treeRes, searchRes] = await Promise.all([
+                const [treeRes, lookupRes, searchRes] = await Promise.all([
                     fetch('/data/tree-skeleton.json'),
-                    fetch('/data/search-index.json')
+                    fetch('/data/lookup.csv'),
+                    fetch('/data/search-index.csv')
                 ]);
                 treeData = await treeRes.json();
-                searchData = await searchRes.json();
+
+                // 解析 lookup.csv → 映射表
+                const lookupCsv = await lookupRes.text();
+                const lookupRows = parseCSV(lookupCsv);
+                lookupMap = {};
+                for (const row of lookupRows) {
+                    lookupMap[row.id] = row.name;
+                }
+
+                // 解析 search-index.csv（归一化版本：did/fid/sid → 还原为名称）
+                const searchCsv = await searchRes.text();
+                searchData = parseCSV(searchCsv).map(row => ({
+                    id: row.id,
+                    name: row.name,
+                    domain: lookupMap[row.did] || row.did,
+                    field: lookupMap[row.fid] || row.fid,
+                    subfield: lookupMap[row.sid] || row.sid,
+                    works_count: parseInt(row.works_count, 10) || 0
+                }));
                 console.log('Data loaded:', treeData.name, searchData.length, 'search entries');
             } catch (error) {
                 console.error('Failed to load data:', error);
@@ -724,7 +781,14 @@
                             setChildren(topicCache.get(node._topic_file));
                         } else {
                             const res = await fetch(node._topic_file);
-                            const topicChildren = await res.json();
+                            const csvText = await res.text();
+                            const topicChildren = parseCSV(csvText).map(row => ({
+                                id: row.id,
+                                name: row.name,
+                                type: 'topic',
+                                works_count: parseInt(row.works_count, 10) || 0,
+                                children: []
+                            }));
                             topicCache.set(node._topic_file, topicChildren);
                             setChildren(topicChildren);
                         }

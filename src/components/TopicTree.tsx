@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { Topic } from '../types';
+import { TreeNode } from '../types';
 
 interface TopicTreeProps {
-  topics: Topic[];
-  selectedTopic: Topic | null;
-  onSelectTopic: (topic: Topic) => void;
+  topics: TreeNode[];
+  selectedTopic: TreeNode | null;
+  onSelectTopic: (topic: TreeNode) => void;
 }
 
 interface TreeNodeProps {
-  topic: Topic;
+  topic: TreeNode;
   isSelected: boolean;
-  onSelect: (topic: Topic) => void;
+  onSelect: (topic: TreeNode) => void;
 }
 
-function TreeNode({ topic, isSelected, onSelect }: TreeNodeProps) {
+function TreeNodeItem({ topic, isSelected, onSelect }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -28,23 +28,21 @@ function TreeNode({ topic, isSelected, onSelect }: TreeNodeProps) {
         }}>
           {isExpanded ? '▼' : '▶'}
         </span>
-        <span className="topic-name">{topic.display_name}</span>
-        <span className="works-count">{topic.works_count}</span>
+        <span className="topic-name">{topic.name}</span>
+        {topic.works_count !== undefined && (
+          <span className="works-count">{topic.works_count.toLocaleString()}</span>
+        )}
       </div>
-      {isExpanded && (
+      {isExpanded && topic.children.length > 0 && (
         <div className="tree-node-content">
-          <div className="topic-info">
-            {topic.domain && <span className="info-item">Domain: {topic.domain}</span>}
-            {topic.field && <span className="info-item">Field: {topic.field}</span>}
-            {topic.subfield && <span className="info-item">Subfield: {topic.subfield}</span>}
-          </div>
-          {topic.keywords && topic.keywords.length > 0 && (
-            <div className="keywords">
-              {topic.keywords.slice(0, 5).map((keyword: string, index: number) => (
-                <span key={index} className="keyword-tag">{keyword}</span>
-              ))}
-            </div>
-          )}
+          {topic.children.map((child) => (
+            <TreeNodeItem
+              key={child.id}
+              topic={child}
+              isSelected={false}
+              onSelect={onSelect}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -64,7 +62,7 @@ export function TopicTree({ topics, selectedTopic, onSelectTopic }: TopicTreePro
     <div className="tree-container">
       <div className="tree-view">
         {topics.map((topic) => (
-          <TreeNode
+          <TreeNodeItem
             key={topic.id}
             topic={topic}
             isSelected={selectedTopic?.id === topic.id}

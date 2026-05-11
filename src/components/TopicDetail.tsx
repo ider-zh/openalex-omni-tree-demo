@@ -1,7 +1,7 @@
-import { Topic } from '../types';
+import { TreeNode } from '../types';
 
 interface TopicDetailProps {
-  topic: Topic | null;
+  topic: TreeNode | null;
 }
 
 export function TopicDetail({ topic }: TopicDetailProps) {
@@ -20,31 +20,9 @@ export function TopicDetail({ topic }: TopicDetailProps) {
     <div className="detail-panel">
       <h3>Topic Details</h3>
       <div className="topic-detail">
-        <h4 className="topic-title">{topic.display_name}</h4>
-        
-        {topic.description && (
-          <p className="topic-description">{topic.description}</p>
-        )}
+        <h4 className="topic-title">{topic.name}</h4>
 
         <div className="topic-meta">
-          {topic.domain && (
-            <div className="meta-row">
-              <span className="meta-label">Domain:</span>
-              <span className="meta-value">{topic.domain}</span>
-            </div>
-          )}
-          {topic.field && (
-            <div className="meta-row">
-              <span className="meta-label">Field:</span>
-              <span className="meta-value">{topic.field}</span>
-            </div>
-          )}
-          {topic.subfield && (
-            <div className="meta-row">
-              <span className="meta-label">Subfield:</span>
-              <span className="meta-value">{topic.subfield}</span>
-            </div>
-          )}
           {topic.works_count !== undefined && (
             <div className="meta-row">
               <span className="meta-label">Works Count:</span>
@@ -52,17 +30,6 @@ export function TopicDetail({ topic }: TopicDetailProps) {
             </div>
           )}
         </div>
-
-        {topic.keywords && topic.keywords.length > 0 && (
-          <div className="keywords-section">
-            <h5>Keywords</h5>
-            <div className="keywords-list">
-              {topic.keywords.map((keyword: string, index: number) => (
-                <span key={index} className="keyword-badge">{keyword}</span>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="topic-links">
           <a href={`https://openalex.org/${topic.id}`} target="_blank" rel="noopener noreferrer">

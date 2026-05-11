@@ -30,7 +30,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const hasTopicFile = (node as any)._topic_file && loadTopicChildren;
+  const hasTopicFile = node._topic_file && loadTopicChildren;
   const hasChildren = children.length > 0 || hasTopicFile;
   
   const isHighlighted = searchResults && searchResults.some(r => 
@@ -44,7 +44,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     if (newExpanded && hasTopicFile && !isLoaded) {
       setIsLoading(true);
       try {
-        const topicChildren = await loadTopicChildren!(node.id, (node as any)._topic_file);
+        const topicChildren = await loadTopicChildren!(node.id, node._topic_file!);
         setChildren(topicChildren);
         setIsLoaded(true);
       } catch (err) {
