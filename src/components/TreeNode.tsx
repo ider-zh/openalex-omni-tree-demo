@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { TreeNode } from '../types';
 import { parseCSV } from '../utils/csv-parser';
 import { formatNumber } from '../utils/format';
 import { TFunction } from '../context/I18nContext';
 
-// Cache for lazy-loaded children (both topics and concepts)
 const topicCache = new Map<string, TreeNode[]>();
 
 interface TreeNodeComponentProps {
@@ -16,6 +15,9 @@ interface TreeNodeComponentProps {
   searchQuery?: string;
   t: TFunction;
 }
+
+const INITIAL_VISIBLE = 30;
+const PAGE_SIZE = 50;
 
 const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   node,
@@ -33,12 +35,14 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   const [children, setChildren] = useState<TreeNode[]>(node.children || []);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(100);
-  const CONCEPT_PAGE_SIZE = 100;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setChildren(node.children || []);
     setIsLoaded(false);
+    setVisibleCount(INITIAL_VISIBLE);
   }, [node.children]);
 
   useEffect(() => {
@@ -55,7 +59,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     (r: any) => r.path.includes(node.name) || r.id === node.id
   );
 
-  const loadChildren = async () => {
+  const loadChildren = useCallback(async () => {
     if ((hasTopicFile || hasConceptFile) && !isLoaded && !isLoading) {
       setIsLoading(true);
       try {
@@ -69,7 +73,6 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
           const csvRows = parseCSV(csvText);
 
           if (hasTopicFile) {
-            // Topics CSV: id, name, works_count
             const topicChildren: TreeNode[] = csvRows.map((row: any) => ({
               id: row.id,
               name: row.name,
@@ -81,7 +84,6 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
             topicCache.set(cacheKey, topicChildren);
             setChildren(topicChildren);
           } else {
-            // Concepts CSV: id, name, works_count, children_count, _concept_file
             const conceptChildren: TreeNode[] = csvRows.map((row: any) => ({
               id: row.id,
               name: row.name,
@@ -103,7 +105,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
         setIsLoading(false);
       }
     }
-  };
+  }, [hasTopicFile, hasConceptFile, isLoaded, isLoading, node._topic_file, node._concept_file]);
 
   const toggleExpand = async () => {
     const newExpanded = !isExpanded;
@@ -117,7 +119,23 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     if (isExpanded && (hasTopicFile || hasConceptFile) && !isLoaded) {
       loadChildren();
     }
-  }, [isExpanded]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isExpanded, loadChildren]);
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !isExpanded || children.length <= visibleCount) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && children.length > visibleCount) {
+          setVisibleCount(prev => prev + PAGE_SIZE);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [isExpanded, children.length, visibleCount]);
 
   const getIcon = () => {
     switch (node.type) {
@@ -219,6 +237,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     });
   }, [children, searchResults, node.name, node.type, level]);
 
+  const visibleChildren = filteredChildren.slice(0, visibleCount);
+  const hasMore = filteredChildren.length > visibleCount;
+
   return (
     <div className="tree-node" style={{ marginLeft: `${level * 20}px` }} data-type={node.type}>
       <div
@@ -250,9 +271,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
         </span>
       </div>
 
-      {isExpanded && filteredChildren.length > 0 && (
+      {isExpanded && (
         <div className="tree-children">
-          {filteredChildren.slice(0, visibleCount).map(child => (
+          {visibleChildren.map(child => (
             <TreeNodeComponent
               key={child.id}
               node={child}
@@ -264,12 +285,15 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
               t={t}
             />
           ))}
-          {filteredChildren.length > visibleCount && (
-            <div style={{ marginLeft: `${(level + 1) * 20}px`, padding: '8px', textAlign: 'center' }}>
+          {hasMore && (
+            <div
+              ref={loadMoreRef}
+              style={{ marginLeft: `${(level + 1) * 20}px`, padding: '8px', textAlign: 'center' }}
+            >
               <button
                 className="toggle-btn"
                 style={{ fontSize: '0.85rem', padding: '6px 16px' }}
-                onClick={() => setVisibleCount(prev => prev + CONCEPT_PAGE_SIZE)}
+                onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
               >
                 {t('showMore', { count: filteredChildren.length - visibleCount })}
               </button>

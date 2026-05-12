@@ -74,7 +74,7 @@ const TreePage: React.FC<TreePageProps> = ({ treeType, store, t, switchTreeType,
           <TreeView
             key={treeType + '-' + searchCounter}
             tree={tree}
-            defaultExpandLevel={searchResults.length > 0 ? undefined : treeType === 'concepts' ? 1 : 2}
+            defaultExpandLevel={searchResults.length > 0 ? undefined : treeType === 'concepts' ? 0 : 1}
             expandedNodes={expandedNodes}
             searchResults={searchResults}
             searchQuery={searchQuery}
