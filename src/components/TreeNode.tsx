@@ -3,6 +3,7 @@ import { TreeNode } from '../types';
 import { parseCSV } from '../utils/csv-parser';
 import { formatNumber } from '../utils/format';
 import { TFunction } from '../context/I18nContext';
+import { csvFetchQueue } from '../utils/request-queue';
 
 const topicCache = new Map<string, TreeNode[]>();
 
@@ -68,7 +69,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
         if (topicCache.has(cacheKey)) {
           setChildren(topicCache.get(cacheKey)!);
         } else {
-          const res = await fetch(file!);
+          const res = await csvFetchQueue.add(() => fetch(file!));
           const csvText = await res.text();
           const csvRows = parseCSV(csvText);
 
