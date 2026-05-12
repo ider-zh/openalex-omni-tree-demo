@@ -40,3 +40,17 @@ tmp/
 # Test artifacts
 coverage/
 .test-results/
+
+# Generated data (built from gz source files)
+public/data/concepts/concept-children/
+public/data/concepts/tree-skeleton.json
+public/data/concepts/search-index.csv
+public/data/concepts/lookup.csv
+public/data/concepts/stats.json
+
+# Generated topic data
+public/data/topics/
+public/data/tree-skeleton.json
+public/data/search-index.csv
+public/data/lookup.csv
+public/data/stats.json
