@@ -1,11 +1,13 @@
 export interface TreeNode {
   id: string;
   name: string;
-  type: 'root' | 'domain' | 'field' | 'subfield' | 'topic';
+  type: 'root' | 'domain' | 'field' | 'subfield' | 'topic' | 'concept';
   works_count?: number;
   children: TreeNode[];
   _topic_file?: string;
+  _concept_file?: string;
   topic_count?: number;
+  concept_count?: number;
 }
 
 /** CSV 搜索索引行 */

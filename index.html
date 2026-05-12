@@ -282,6 +282,45 @@
             color: var(--text-secondary);
         }
 
+        .tree-type-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .toggle-btn {
+            padding: 10px 24px;
+            font-size: 0.95rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .toggle-btn:hover {
+            border-color: var(--text-accent);
+            color: var(--text-primary);
+        }
+        .toggle-btn.active {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
+            font-weight: 600;
+        }
+        .data-version-badge {
+            text-align: center;
+            color: var(--text-accent);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 10px 0;
+            padding: 6px 12px;
+            background-color: rgba(100, 255, 218, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
         .search-button,
         .clear-button {
             padding: 12px 20px;
@@ -465,6 +504,18 @@
             color: var(--text-title);
         }
 
+        [data-type="concept"] .node-name {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-title);
+        }
+
+        [data-type="domain"] .node-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-accent);
+        }
+
         /* Scrollbar styles */
         .main-content::-webkit-scrollbar {
             width: 10px;
@@ -526,19 +577,28 @@
         // ===================== i18n Translations =====================
         const translations = {
             en: {
-                title: 'OpenAlex Topics Tree',
-                subtitle: 'Hierarchical view of academic topics',
+                topicsTitle: 'OpenAlex Topics Tree',
+                conceptsTitle: 'OpenAlex Concepts Tree',
+                topicsSubtitle: 'Hierarchical view of academic topics',
+                conceptsSubtitle: 'Hierarchical view of academic concepts',
                 whatIsOpenAlex: 'What is OpenAlex?',
                 openAlexDesc: 'OpenAlex is a fully open catalog of the global research system, providing free access to hundreds of millions of scholarly works, authors, institutions, and more. It serves as an open alternative to proprietary services like Scopus and Web of Science.',
                 learnMore: 'Learn more at:',
                 whatAreTopics: 'What are Topics?',
+                whatAreConcepts: 'What are Concepts?',
                 topicsDesc: 'Topics are concept-level labels automatically assigned to scholarly works by OpenAlex. Each topic represents a specific research concept or subject area, enabling researchers to explore and discover papers based on conceptual relevance rather than just keywords.',
+                conceptsDesc: 'Concepts are standardized subject labels derived from the OpenAlex controlled vocabulary. They represent academic disciplines organized in a parent-child hierarchy, from top-level fields like Computer Science and Medicine down to highly specialized sub-concepts.',
                 topicFeature1: '4,516 unique topics across all research domains',
+                conceptFeature1: '65,073 unique concepts across all research disciplines',
                 topicFeature2: 'Machine-generated descriptions and keywords',
+                conceptFeature2: 'Parent-child hierarchy with ancestor relationships',
                 topicFeature3: 'Hierarchical organization from broad to specific',
+                conceptFeature3: '19 root disciplines branching into specialized fields',
                 treeStructure: 'Tree Structure',
-                treeDesc: 'Topics are organized in a four-level hierarchy:',
+                topicsTreeDesc: 'Topics are organized in a four-level hierarchy:',
+                conceptsTreeDesc: 'Concepts are organized in a parent-child hierarchy from 19 root disciplines:',
                 hierarchyDomain: 'Domain — Broad research area (e.g., Physical Sciences)',
+                hierarchyLevel: 'Level {n} — Concept hierarchy depth',
                 hierarchyField: 'Field — Major discipline (e.g., Engineering)',
                 hierarchySubfield: 'Subfield — Specialized area (e.g., AI)',
                 hierarchyTopic: 'Topic — Specific concept (e.g., Machine Learning)',
@@ -548,13 +608,17 @@
                 usageTip2: 'Search filters and highlights matching topics',
                 usageTip3: 'Each node shows works count and topic count',
                 jumpButton: 'Browse Topics Tree',
+                conceptsJumpButton: 'Browse Concepts Tree',
                 searchPlaceholder: 'Search topics, keywords, domains...',
+                searchConceptsPlaceholder: 'Search concepts...',
                 searchButton: 'Search',
                 searching: 'Searching...',
                 foundTopics: (count) => `Found ${count} topic${count !== 1 ? 's' : ''}`,
+                foundConcepts: (count) => `Found ${count} concept${count !== 1 ? 's' : ''}`,
                 loading: 'Loading tree data...',
                 worksCountTitle: 'Total works in this category',
                 topicCountTitle: 'Number of topics',
+                conceptCountTitle: 'Number of concepts',
                 openAlexTitle: 'View works on OpenAlex',
                 languageLabel: 'Language',
                 themeLabel: 'Theme',
@@ -562,19 +626,28 @@
                 lightTheme: 'Light'
             },
             zh: {
-                title: 'OpenAlex 主题树',
-                subtitle: '学术主题层级视图',
+                topicsTitle: 'OpenAlex 主题树',
+                conceptsTitle: 'OpenAlex 概念树',
+                topicsSubtitle: '学术主题层级视图',
+                conceptsSubtitle: '学术概念层级视图',
                 whatIsOpenAlex: '什么是 OpenAlex？',
                 openAlexDesc: 'OpenAlex 是一个完全开放的全球研究系统目录，免费提供对数亿学术作品、作者、机构等的访问。它是 Scopus 和 Web of Science 等专有服务的开放替代品。',
                 learnMore: '了解更多：',
                 whatAreTopics: '什么是主题（Topics）？',
+                whatAreConcepts: '什么是概念（Concepts）？',
                 topicsDesc: '主题是由 OpenAlex 自动分配给学术作品的概念级标签。每个主题代表一个特定的研究概念或学科领域，使研究人员能够基于概念相关性而非仅仅关键词来探索和发现论文。',
+                conceptsDesc: '概念是源自 OpenAlex 受控词汇表的标准化学科标签。它们按父子层级关系组织，从计算机科学、医学等顶级学科到高度专业化的子概念。',
                 topicFeature1: '跨越所有研究领域的 4,516 个独特主题',
+                conceptFeature1: '跨越所有研究学科的 65,073 个独特概念',
                 topicFeature2: '机器生成的描述和关键词',
+                conceptFeature2: '带祖先关系的父子层级结构',
                 topicFeature3: '从广泛到具体的层级组织',
+                conceptFeature3: '19 个根学科分支到专业化领域',
                 treeStructure: '树形结构',
-                treeDesc: '主题按四级层级结构组织：',
+                topicsTreeDesc: '主题按四级层级结构组织：',
+                conceptsTreeDesc: '概念按父子层级结构组织，从 19 个根学科开始：',
                 hierarchyDomain: '领域（Domain）— 广泛的研究领域（如物理科学）',
+                hierarchyLevel: '级别 {n} — 概念层级深度',
                 hierarchyField: '学科（Field）— 主要学科（如工程学）',
                 hierarchySubfield: '子领域（Subfield）— 专门领域（如人工智能）',
                 hierarchyTopic: '主题（Topic）— 具体概念（如机器学习）',
@@ -584,13 +657,17 @@
                 usageTip2: '搜索可过滤并高亮匹配的主题',
                 usageTip3: '每个节点显示作品数量和主题数量',
                 jumpButton: '浏览主题树',
+                conceptsJumpButton: '浏览概念树',
                 searchPlaceholder: '搜索主题、关键词、领域...',
+                searchConceptsPlaceholder: '搜索概念...',
                 searchButton: '搜索',
                 searching: '搜索中...',
                 foundTopics: (count) => `找到 ${count} 个主题`,
+                foundConcepts: (count) => `找到 ${count} 个概念`,
                 loading: '加载树形数据...',
                 worksCountTitle: '该类别下的作品总数',
                 topicCountTitle: '主题数量',
+                conceptCountTitle: '概念数量',
                 openAlexTitle: '在 OpenAlex 上查看作品',
                 languageLabel: '语言',
                 themeLabel: '主题',
@@ -598,19 +675,28 @@
                 lightTheme: '亮色'
             },
             ja: {
-                title: 'OpenAlex トピックツリー',
-                subtitle: '学術トピックの階層ビュー',
+                topicsTitle: 'OpenAlex トピックツリー',
+                conceptsTitle: 'OpenAlex コンセプトツリー',
+                topicsSubtitle: '学術トピックの階層ビュー',
+                conceptsSubtitle: '学術コンセプトの階層ビュー',
                 whatIsOpenAlex: 'OpenAlex とは？',
                 openAlexDesc: 'OpenAlex は、数億の学術作品、著者、機関などへの無料アクセスを提供する、完全にオープンなグローバル研究システムカタログです。Scopus や Web of Science などのプロプライエタリサービスに対するオープンな代替手段として機能します。',
                 learnMore: '詳細はこちら：',
                 whatAreTopics: 'トピックとは？',
+                whatAreConcepts: 'コンセプトとは？',
                 topicsDesc: 'トピックは、OpenAlex によって学術作品に自動的に割り当てられる概念レベルのラベルです。各トピックは特定の研究概念または分野を表し、研究者がキーワードだけでなく概念的相关性に基づいて論文を探索・発見できるようにします。',
+                conceptsDesc: 'コンセプトは OpenAlex の統制語彙から派生した標準化された分野ラベルです。親子階層関係で構成され、コンピュータサイエンスや医学などのトップレベルから高度に専門化されたサブコンセプトまでを含みます。',
                 topicFeature1: 'すべての研究分野にわたる 4,516 のユニークなトピック',
+                conceptFeature1: 'すべての研究分野にわたる 65,073 のユニークなコンセプト',
                 topicFeature2: '機械生成された説明とキーワード',
+                conceptFeature2: '祖先関係を持つ親子階層構造',
                 topicFeature3: '広範から具体的までの階層組織',
+                conceptFeature3: '19のルート分野から専門分野への分岐',
                 treeStructure: 'ツリー構造',
-                treeDesc: 'トピックは 4 段階の階層で構成されています：',
+                topicsTreeDesc: 'トピックは 4 段階の階層で構成されています：',
+                conceptsTreeDesc: 'コンセプトは 19 のルート分野から始まる親子階層で構成されています：',
                 hierarchyDomain: 'ドメイン — 広範な研究分野（例：物理科学）',
+                hierarchyLevel: 'レベル {n} — コンセプト階層の深さ',
                 hierarchyField: 'フィールド — 主要分野（例：工学）',
                 hierarchySubfield: 'サブフィールド — 専門分野（例：AI）',
                 hierarchyTopic: 'トピック — 具体的な概念（例：機械学習）',
@@ -620,13 +706,17 @@
                 usageTip2: '検索で一致するトピックをフィルタリング＆ハイライト',
                 usageTip3: '各ノードに作品数とトピック数を表示',
                 jumpButton: 'トピックツリーを閲覧',
+                conceptsJumpButton: 'コンセプトツリーを閲覧',
                 searchPlaceholder: 'トピック、キーワード、ドメインを検索...',
+                searchConceptsPlaceholder: 'コンセプトを検索...',
                 searchButton: '検索',
                 searching: '検索中...',
                 foundTopics: (count) => `${count} 件のトピックが見つかりました`,
+                foundConcepts: (count) => `${count} 件のコンセプトが見つかりました`,
                 loading: 'ツリーデータを読み込み中...',
                 worksCountTitle: 'このカテゴリの総作品数',
                 topicCountTitle: 'トピック数',
+                conceptCountTitle: 'コンセプト数',
                 openAlexTitle: 'OpenAlex で作品を表示',
                 languageLabel: '言語',
                 themeLabel: 'テーマ',
@@ -704,41 +794,122 @@
             return fields;
         }
 
-        // Fetch data
-        let treeData = null;
-        let searchData = null;
-        let lookupMap = null; // { 'D1': 'Physical Sciences', 'F1': 'Engineering', 'S1': 'Aerospace Engineering', ... }
+        // Fetch data — topics and concepts are completely independent
+        // Tree data (skeleton) loads immediately for rendering
+        // Search index loads lazily only when user searches
+        let topicsTreeData = null;
+        let topicsSearchData = null;
+        let topicsLookupMap = null;
+        let conceptsTreeData = null;
+        let conceptsSearchData = null;
+        let dataVersions = { topics: '', concepts: '' };
+        let searchLoading = { topics: false, concepts: false };
+        let searchLoaded = { topics: false, concepts: false };
 
-        async function loadData() {
+        // Load only tree skeleton for immediate rendering
+        async function loadTopicsTree() {
+            if (topicsTreeData) return;
             try {
-                const [treeRes, lookupRes, searchRes] = await Promise.all([
-                    fetch('/data/tree-skeleton.json'),
+                const treeRes = await fetch('/data/tree-skeleton.json');
+                topicsTreeData = await treeRes.json();
+                if (topicsTreeData.version) dataVersions.topics = topicsTreeData.version;
+                if (topicsTreeData.children && !topicsTreeData.version) {
+                    topicsTreeData = { ...topicsTreeData, version: '', generated_at: '' };
+                }
+                console.log('Topics tree loaded:', topicsTreeData.name);
+            } catch (error) {
+                console.error('Failed to load topics tree:', error);
+            }
+        }
+
+        // Load search index lazily — only called when user actually searches
+        async function ensureTopicsSearchData() {
+            if (searchLoaded.topics || searchLoading.topics) return;
+            searchLoading.topics = true;
+            try {
+                // Load lookup table + search index in parallel
+                const [lookupRes, searchRes] = await Promise.all([
                     fetch('/data/lookup.csv'),
                     fetch('/data/search-index.csv')
                 ]);
-                treeData = await treeRes.json();
-
-                // 解析 lookup.csv → 映射表
                 const lookupCsv = await lookupRes.text();
                 const lookupRows = parseCSV(lookupCsv);
-                lookupMap = {};
+                topicsLookupMap = {};
                 for (const row of lookupRows) {
-                    lookupMap[row.id] = row.name;
+                    topicsLookupMap[row.id] = row.name;
                 }
 
-                // 解析 search-index.csv（归一化版本：did/fid/sid → 还原为名称）
                 const searchCsv = await searchRes.text();
-                searchData = parseCSV(searchCsv).map(row => ({
+                topicsSearchData = parseCSV(searchCsv).map(row => ({
                     id: row.id,
                     name: row.name,
-                    domain: lookupMap[row.did] || row.did,
-                    field: lookupMap[row.fid] || row.fid,
-                    subfield: lookupMap[row.sid] || row.sid,
+                    domain: topicsLookupMap[row.did] || row.did,
+                    field: topicsLookupMap[row.fid] || row.fid,
+                    subfield: topicsLookupMap[row.sid] || row.sid,
                     works_count: parseInt(row.works_count, 10) || 0
                 }));
-                console.log('Data loaded:', treeData.name, searchData.length, 'search entries');
+                searchLoaded.topics = true;
+                console.log('Topics search data loaded:', topicsSearchData.length, 'entries');
             } catch (error) {
-                console.error('Failed to load data:', error);
+                console.error('Failed to load topics search data:', error);
+            } finally {
+                searchLoading.topics = false;
+            }
+        }
+
+        // Load only tree skeleton for immediate rendering
+        async function loadConceptsTree() {
+            if (conceptsTreeData) return;
+            try {
+                const treeRes = await fetch('/data/concepts/tree-skeleton.json');
+                const raw = await treeRes.json();
+                if (raw.version) dataVersions.concepts = raw.version;
+                
+                // Add type field to concept nodes
+                const addType = (node) => {
+                    if (!node.type) {
+                        if (node.level === 0) node.type = 'domain';
+                        else if (node.level === 1) node.type = 'field';
+                        else node.type = 'concept';
+                    }
+                    if (node.children) {
+                        node.children.forEach(addType);
+                    }
+                    return node;
+                };
+                
+                conceptsTreeData = {
+                    ...raw,
+                    tree: raw.tree.map(addType)
+                };
+                console.log('Concepts tree loaded:', conceptsTreeData.tree.length, 'roots');
+            } catch (error) {
+                console.error('Failed to load concepts tree:', error);
+            }
+        }
+
+        // Load search index lazily — only called when user actually searches
+        async function ensureConceptsSearchData() {
+            if (searchLoaded.concepts || searchLoading.concepts) return;
+            searchLoading.concepts = true;
+            try {
+                const searchRes = await fetch('/data/concepts/search-index.json');
+                conceptsSearchData = await searchRes.json();
+                searchLoaded.concepts = true;
+                console.log('Concepts search data loaded:', conceptsSearchData.length, 'entries');
+            } catch (error) {
+                console.error('Failed to load concepts search data:', error);
+            } finally {
+                searchLoading.concepts = false;
+            }
+        }
+
+        // Unified lazy search data loader
+        async function ensureSearchData(type) {
+            if (type === 'topics') {
+                await ensureTopicsSearchData();
+            } else {
+                await ensureConceptsSearchData();
             }
         }
 
@@ -757,6 +928,14 @@
             const [children, setChildren] = useState(node.children || []);
             const [isLoading, setIsLoading] = useState(false);
             const [isLoaded, setIsLoaded] = useState(false);
+            const [visibleCount, setVisibleCount] = useState(100); // Pagination for large concept lists
+            const CONCEPT_PAGE_SIZE = 100;
+
+            // Sync children state when node.children prop changes (e.g. switching topics↔concepts)
+            useEffect(() => {
+                setChildren(node.children || []);
+                setIsLoaded(false);
+            }, [node.children]);
 
             // Update expansion state when expandedNodes changes
             useEffect(() => {
@@ -766,35 +945,53 @@
             }, [expandedNodes, node.name]);
 
             const hasTopicFile = node._topic_file;
-            const hasChildren = children.length > 0 || hasTopicFile;
+            const hasConceptFile = node._concept_file;
+            const hasChildren = children.length > 0 || hasTopicFile || hasConceptFile;
             
             const isHighlighted = searchResults && searchResults.some(r => 
                 r.path.includes(node.name) || r.id === node.id
             );
 
-            // Load topic children when expanded via search
-            const loadTopicChildren = async () => {
-                if (hasTopicFile && !isLoaded && !isLoading) {
+            // Load topic/concept children when expanded via search
+            const loadChildren = async () => {
+                if ((hasTopicFile || hasConceptFile) && !isLoaded && !isLoading) {
                     setIsLoading(true);
                     try {
-                        if (topicCache.has(node._topic_file)) {
-                            setChildren(topicCache.get(node._topic_file));
+                        const file = hasTopicFile ? node._topic_file : node._concept_file;
+                        const cacheKey = file;
+                        if (topicCache.has(cacheKey)) {
+                            setChildren(topicCache.get(cacheKey));
                         } else {
-                            const res = await fetch(node._topic_file);
-                            const csvText = await res.text();
-                            const topicChildren = parseCSV(csvText).map(row => ({
-                                id: row.id,
-                                name: row.name,
-                                type: 'topic',
-                                works_count: parseInt(row.works_count, 10) || 0,
-                                children: []
-                            }));
-                            topicCache.set(node._topic_file, topicChildren);
-                            setChildren(topicChildren);
+                            const res = await fetch(file);
+                            
+                            if (hasConceptFile) {
+                                // Concepts format: JSON array of child nodes
+                                const jsonChildren = await res.json();
+                                const conceptChildren = jsonChildren.map(c => ({
+                                    ...c,
+                                    type: c.level === 0 ? 'domain' : c.level === 1 ? 'field' : 'concept'
+                                }));
+                                topicCache.set(cacheKey, conceptChildren);
+                                setChildren(conceptChildren);
+                            } else {
+                                // Topics format: CSV
+                                const csvText = await res.text();
+                                const csvRows = parseCSV(csvText);
+                                const csvChildren = csvRows.map(row => ({
+                                    id: row.id,
+                                    name: row.name,
+                                    type: 'topic',
+                                    works_count: parseInt(row.works_count, 10) || 0,
+                                    description: row.description || '',
+                                    children: []
+                                }));
+                                topicCache.set(cacheKey, csvChildren);
+                                setChildren(csvChildren);
+                            }
                         }
                         setIsLoaded(true);
                     } catch (err) {
-                        console.error('Failed to load topic children:', err);
+                        console.error('Failed to load children:', err);
                     } finally {
                         setIsLoading(false);
                     }
@@ -805,15 +1002,15 @@
                 const newExpanded = !isExpanded;
                 setIsExpanded(newExpanded);
 
-                if (newExpanded && hasTopicFile && !isLoaded) {
-                    await loadTopicChildren();
+                if (newExpanded && (hasTopicFile || hasConceptFile) && !isLoaded) {
+                    await loadChildren();
                 }
             };
 
-            // Auto-load topic children when node is expanded by search
+            // Auto-load topic/concept children when node is expanded by search
             useEffect(() => {
-                if (isExpanded && hasTopicFile && !isLoaded) {
-                    loadTopicChildren();
+                if (isExpanded && (hasTopicFile || hasConceptFile) && !isLoaded) {
+                    loadChildren();
                 }
             }, [isExpanded]);
 
@@ -823,7 +1020,8 @@
                     case 'field': return '📚';
                     case 'subfield': return '📖';
                     case 'topic': return '📄';
-                    default: return '📁';
+                    case 'concept': return '💡';
+                    default: return node.works_count !== undefined ? '💡' : '📁';
                 }
             };
 
@@ -883,7 +1081,7 @@
                     topicIds.add(result.id);
                 });
 
-                // Special case for root node: show domains that have matching topics
+                // Special case for root node: show domains that have matching topics/concepts
                 if (node.type === 'root') {
                     const matchingDomains = new Set();
                     searchResults.forEach(result => {
@@ -896,23 +1094,39 @@
                     });
                 }
 
-                // For topic nodes, check if this specific topic is in the search results
-                if (node.type === 'topic') {
+                // For topic/leaf concept nodes, check if this specific item is in the search results
+                if (node.type === 'topic' || node.type === 'concept') {
                     const isMatch = topicIds.has(node.id);
                     return isMatch ? (node.children || []) : [];
                 }
 
-                // For non-topic nodes (domain, field, subfield)
-                // Determine the level of this node (1=domain, 2=field, 3=subfield)
+                // For hierarchy nodes (domain, field, subfield) in topics tree
                 // Path structure: [domain(0), field(1), subfield(2), topic(3)]
                 const pathIndex = node.type === 'domain' ? 0 : 
                                   node.type === 'field' ? 1 : 
                                   node.type === 'subfield' ? 2 : -1;
 
+                // For concepts tree with variable-depth paths,
+                // find the position of this node's name in each search result path
+                // then filter children by whether they appear at the next position
                 if (pathIndex === -1) {
-                    return [];
+                    // Variable-depth concept path matching
+                    // Find which search results have this node's name in their path
+                    // and then check if children appear as the next name
+                    const validChildNames = new Set();
+                    searchResults.forEach(result => {
+                        const idx = result.path.indexOf(node.name);
+                        if (idx >= 0 && idx < result.path.length - 1) {
+                            validChildNames.add(result.path[idx + 1]);
+                        }
+                    });
+                    return (children || []).filter(child => {
+                        if (topicIds.has(child.id)) return true;
+                        return validChildNames.has(child.name);
+                    });
                 }
 
+                // Fixed-depth path matching (topics tree)
                 // Check if this node appears at the correct position in any valid path
                 const nodeInAnyPath = searchResults.some(result => {
                     if (result.path.length <= pathIndex) return false;
@@ -940,11 +1154,11 @@
                 });
 
                 return (children || []).filter(child => {
-                    // For topic children, check by ID
-                    if (child.type === 'topic') {
+                    // For topic/concept children, check by ID
+                    if (child.type === 'topic' || child.type === 'concept') {
                         return topicIds.has(child.id);
                     }
-                    // For non-topic children, check by name
+                    // For non-topic/concept children, check by name
                     return validChildNames.has(child.name);
                 });
             }, [children, searchResults, node.name, node.type, level]);
@@ -970,6 +1184,9 @@
                         node.topic_count !== undefined && React.createElement('span', { className: 'stat-item', title: t('topicCountTitle') },
                             `📄 ${node.topic_count}`
                         ),
+                        node.concept_count !== undefined && React.createElement('span', { className: 'stat-item', title: t('conceptCountTitle') },
+                            `💡 ${node.concept_count}`
+                        ),
                         node.type !== 'root' && React.createElement('button', {
                             className: 'openalex-btn',
                             onClick: openInOpenAlex,
@@ -978,7 +1195,7 @@
                     )
                 ),
                 isExpanded && filteredChildren.length > 0 && React.createElement('div', { className: 'tree-children' },
-                    filteredChildren.map(child => 
+                    filteredChildren.slice(0, visibleCount).map(child =>
                         React.createElement(TreeNodeComponent, {
                             key: child.id,
                             node: child,
@@ -989,6 +1206,16 @@
                             searchQuery: searchQuery,
                             t: t
                         })
+                    ),
+                    // Show "Load more" button for large concept lists
+                    filteredChildren.length > visibleCount && React.createElement('div', {
+                        style: { marginLeft: `${(level + 1) * 20}px`, padding: '8px', textAlign: 'center' }
+                    },
+                        React.createElement('button', {
+                            className: 'toggle-btn',
+                            style: { fontSize: '0.85rem', padding: '6px 16px' },
+                            onClick: () => setVisibleCount(prev => prev + CONCEPT_PAGE_SIZE)
+                        }, `Show more (${filteredChildren.length - visibleCount} remaining)`)
                     )
                 )
             );
@@ -1009,24 +1236,65 @@
             );
         }
 
-        // App Component
+        // App Component with hash-based routing
         function App() {
             const { lang, setLang, t } = useI18n();
             const { theme, setTheme } = useTheme();
+
+            // Derive treeType from hash (#topics or #concepts)
+            const [treeType, setTreeType] = useState(() => {
+                const hash = window.location.hash.replace('#', '');
+                return (hash === 'concepts') ? 'concepts' : 'topics';
+            });
             const [tree, setTree] = useState(null);
+            const [dataVersion, setDataVersion] = useState('');
             const [searchResults, setSearchResults] = useState([]);
             const [isSearching, setIsSearching] = useState(false);
             const [expandedNodes, setExpandedNodes] = useState(new Set());
             const [searchQuery, setSearchQuery] = useState('');
             const [searchCounter, setSearchCounter] = useState(0);
 
+            // Sync hash → state (back/forward navigation)
             useEffect(() => {
-                loadData().then(() => {
-                    setTree(treeData);
-                });
+                const onHashChange = () => {
+                    const hash = window.location.hash.replace('#', '');
+                    const newType = (hash === 'concepts') ? 'concepts' : 'topics';
+                    setTreeType(newType);
+                };
+                window.addEventListener('hashchange', onHashChange);
+                return () => window.removeEventListener('hashchange', onHashChange);
             }, []);
 
-            const searchTopics = useCallback((query) => {
+            // Load tree skeleton only when treeType changes — fast render
+            // Search index is loaded lazily on first search
+            useEffect(() => {
+                if (treeType === 'topics') {
+                    loadTopicsTree().then(() => {
+                        setTree(topicsTreeData);
+                        setDataVersion(dataVersions.topics);
+                    });
+                } else {
+                    loadConceptsTree().then(() => {
+                        setTree(conceptsTreeData);
+                        setDataVersion(dataVersions.concepts);
+                    });
+                }
+                setSearchResults([]);
+                setExpandedNodes(new Set());
+                setSearchQuery('');
+            }, [treeType]);
+
+            // Level name lookup for concepts search path (legacy, kept for compatibility)
+            const levelNames = useMemo(() => ({
+                0: 'Level 0 (Top-level concepts)',
+                1: 'Level 1',
+                2: 'Level 2',
+                3: 'Level 3',
+                4: 'Level 4',
+                5: 'Level 5'
+            }), []);
+
+            const searchTopics = useCallback(async (query) => {
                 if (!query.trim()) {
                     setSearchResults([]);
                     setExpandedNodes(new Set());
@@ -1034,33 +1302,102 @@
                 }
 
                 setIsSearching(true);
+
+                // Lazy-load search index on first search
+                await ensureSearchData(treeType);
+
                 const lowerQuery = query.toLowerCase();
-                
-                const matches = [];
-                
-                searchData.forEach(item => {
-                    // Only search in topic name, not in description or keywords
-                    if (item.name.toLowerCase().includes(lowerQuery)) {
-                        const path = [item.domain, item.field, item.subfield, item.name].filter(Boolean);
-                        matches.push({
-                            id: item.id,
-                            path: path
-                        });
+
+                if (treeType === 'topics') {
+                    const currentSearchData = topicsSearchData;
+                    if (!currentSearchData) {
+                        setIsSearching(false);
+                        return;
                     }
-                });
+                    
+                    const matches = [];
+                    const MAX_RESULTS = 200;
+                    
+                    for (let i = 0; i < currentSearchData.length; i++) {
+                        const item = currentSearchData[i];
+                        if (item.name.toLowerCase().includes(lowerQuery)) {
+                            const path = [item.domain, item.field, item.subfield, item.name].filter(Boolean);
+                            matches.push({ id: item.id, path: path });
+                            if (matches.length >= MAX_RESULTS) break;
+                        }
+                    }
 
-                const nodesToExpand = new Set();
-                matches.forEach(result => {
-                    result.path.forEach(nodeName => {
-                        nodesToExpand.add(nodeName);
+                    const nodesToExpand = new Set();
+                    matches.forEach(result => {
+                        result.path.forEach(nodeName => {
+                            nodesToExpand.add(nodeName);
+                        });
                     });
-                });
 
-                setSearchResults(matches);
-                setExpandedNodes(nodesToExpand);
-                setSearchCounter(c => c + 1); // Force re-render
-                setIsSearching(false);
-            }, []);
+                    setSearchResults(matches);
+                    setExpandedNodes(nodesToExpand);
+                    setSearchCounter(c => c + 1);
+                    setIsSearching(false);
+                } else {
+                    // Concepts search: find matching concepts with ancestor paths
+                    const currentSearchData = conceptsSearchData;
+                    if (!currentSearchData) {
+                        setIsSearching(false);
+                        return;
+                    }
+                    
+                    const matches = [];
+                    const MAX_RESULTS = 200;
+                    
+                    for (let i = 0; i < currentSearchData.length; i++) {
+                        const item = currentSearchData[i];
+                        if (item.name.toLowerCase().includes(lowerQuery)) {
+                            // Use path from search index (ancestor names)
+                            const fullPath = [...(item.path || []), item.name];
+                            matches.push({ id: item.id, path: fullPath, level: item.level });
+                            if (matches.length >= MAX_RESULTS) break;
+                        }
+                    }
+
+                    const nodesToExpand = new Set();
+                    matches.forEach(result => {
+                        result.path.forEach(nodeName => {
+                            nodesToExpand.add(nodeName);
+                        });
+                    });
+
+                    setSearchResults(matches);
+                    setExpandedNodes(nodesToExpand);
+                    setSearchCounter(c => c + 1);
+                    setIsSearching(false);
+                }
+            }, [treeType]);
+
+            // Find concept path in tree skeleton by ID
+            function findConceptPath(treeNodes, targetId) {
+                for (const node of treeNodes) {
+                    const result = findInNode(node, targetId);
+                    if (result) return result;
+                }
+                return [];
+            }
+
+            function findInNode(node, targetId) {
+                if (node.id === targetId) {
+                    return [node.name];
+                }
+                
+                if (node.children) {
+                    for (const child of node.children) {
+                        const result = findInNode(child, targetId);
+                        if (result) {
+                            return [node.name, ...result];
+                        }
+                    }
+                }
+                
+                return null;
+            }
 
             const handleSearch = () => {
                 searchTopics(searchQuery);
@@ -1075,6 +1412,11 @@
             const handleClear = () => {
                 setSearchQuery('');
                 searchTopics('');
+            };
+
+            const switchTreeType = (type) => {
+                if (type === treeType) return;
+                window.location.hash = type;
             };
 
             return React.createElement('div', { className: 'app' },
@@ -1096,9 +1438,19 @@
                             title: t('themeLabel')
                         }, theme === 'dark' ? '☀️ ' + t('lightTheme') : '🌙 ' + t('darkTheme'))
                     ),
-                    React.createElement('h1', { className: 'hero-title' }, t('title')),
-                    React.createElement('p', { className: 'hero-subtitle' }, t('subtitle')),
-                    
+                    React.createElement('h1', { className: 'hero-title' }, treeType === 'concepts' ? t('conceptsTitle') : t('topicsTitle')),
+                    React.createElement('p', { className: 'hero-subtitle' }, treeType === 'concepts' ? t('conceptsSubtitle') : t('topicsSubtitle')),
+                    dataVersion ? React.createElement('div', { className: 'data-version-badge' }, 'Data: ' + new Date(dataVersion).toLocaleString()) : null,
+                    React.createElement('div', { className: 'tree-type-toggle' },
+                        React.createElement('button', {
+                            className: 'toggle-btn' + (treeType === 'topics' ? ' active' : ''),
+                            onClick: () => switchTreeType('topics')
+                        }, 'Topics'),
+                        React.createElement('button', {
+                            className: 'toggle-btn' + (treeType === 'concepts' ? ' active' : ''),
+                            onClick: () => switchTreeType('concepts')
+                        }, 'Concepts')
+                    ),
                     React.createElement('div', { className: 'info-grid' },
                         React.createElement('div', { className: 'info-card' },
                             React.createElement('h3', null, '📚 ' + t('whatIsOpenAlex')),
@@ -1107,35 +1459,55 @@
                         ),
                         
                         React.createElement('div', { className: 'info-card' },
-                            React.createElement('h3', null, '🏷️ ' + t('whatAreTopics')),
-                            React.createElement('p', null, t('topicsDesc')),
+                            React.createElement('h3', null, treeType === 'concepts' ? '🏷️ ' + t('whatAreConcepts') : '🏷️ ' + t('whatAreTopics')),
+                            React.createElement('p', null, treeType === 'concepts' ? t('conceptsDesc') : t('topicsDesc')),
                             React.createElement('ul', null,
-                                React.createElement('li', null, t('topicFeature1')),
-                                React.createElement('li', null, t('topicFeature2')),
-                                React.createElement('li', null, t('topicFeature3'))
+                                React.createElement('li', null, treeType === 'concepts' ? t('conceptFeature1') : t('topicFeature1')),
+                                React.createElement('li', null, treeType === 'concepts' ? t('conceptFeature2') : t('topicFeature2')),
+                                React.createElement('li', null, treeType === 'concepts' ? t('conceptFeature3') : t('topicFeature3'))
                             )
                         ),
                         
                         React.createElement('div', { className: 'info-card' },
                             React.createElement('h3', null, '🌳 ' + t('treeStructure')),
-                            React.createElement('p', null, t('treeDesc')),
+                            React.createElement('p', null, treeType === 'concepts' ? t('conceptsTreeDesc') : t('topicsTreeDesc')),
                             React.createElement('div', { className: 'hierarchy-visual' },
-                                React.createElement('div', { className: 'hierarchy-level' }, 
-                                    React.createElement('span', { className: 'level-icon' }, '🌐'),
-                                    t('hierarchyDomain')
-                                ),
-                                React.createElement('div', { className: 'hierarchy-level' }, 
-                                    React.createElement('span', { className: 'level-icon' }, '📚'),
-                                    t('hierarchyField')
-                                ),
-                                React.createElement('div', { className: 'hierarchy-level' }, 
-                                    React.createElement('span', { className: 'level-icon' }, '📖'),
-                                    t('hierarchySubfield')
-                                ),
-                                React.createElement('div', { className: 'hierarchy-level' }, 
-                                    React.createElement('span', { className: 'level-icon' }, '📄'),
-                                    t('hierarchyTopic')
-                                )
+                                treeType === 'concepts'
+                                    ? React.createElement(React.Fragment, null,
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '🌐'),
+                                            'Domain — Top-level disciplines (e.g. Computer Science, Medicine)')
+                                        ,
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📚'),
+                                            'Field — Major sub-disciplines (e.g. Artificial Intelligence)')
+                                        ,
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📖'),
+                                            'Subfield — Specialized research areas')
+                                        ,
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📄'),
+                                            'Specific concepts and instances')
+                                      )
+                                    : React.createElement(React.Fragment, null,
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '🌐'),
+                                            t('hierarchyDomain')
+                                        ),
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📚'),
+                                            t('hierarchyField')
+                                        ),
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📖'),
+                                            t('hierarchySubfield')
+                                        ),
+                                        React.createElement('div', { className: 'hierarchy-level' }, 
+                                            React.createElement('span', { className: 'level-icon' }, '📄'),
+                                            t('hierarchyTopic')
+                                        )
+                                    )
                             )
                         ),
                         
@@ -1157,7 +1529,7 @@
                             e.preventDefault();
                             document.getElementById('tree-content')?.scrollIntoView({ behavior: 'smooth' });
                         }
-                    }, '↓ ' + t('jumpButton'))
+                    }, '↓ ' + (treeType === 'concepts' ? t('conceptsJumpButton') : t('jumpButton')))
                 ),
                 
                 React.createElement('div', { className: 'search-container' },
@@ -1167,24 +1539,26 @@
                             value: searchQuery,
                             onChange: (e) => setSearchQuery(e.target.value),
                             onKeyDown: handleKeyDown,
-                            placeholder: t('searchPlaceholder'),
+                            placeholder: treeType === 'concepts' ? t('searchConceptsPlaceholder') : t('searchPlaceholder'),
                             className: 'search-input'
                         }),
                         React.createElement('button', { onClick: handleSearch, className: 'search-button' }, t('searchButton')),
                         searchQuery && React.createElement('button', { onClick: handleClear, className: 'clear-button' }, '✕')
                     ),
-                    isSearching && React.createElement('div', { className: 'searching-indicator' }, t('searching')),
+                    isSearching && React.createElement('div', { className: 'searching-indicator' },
+                        (!searchLoaded[treeType]) ? 'Loading search index...' : t('searching')
+                    ),
                     searchResults.length > 0 && !isSearching && 
                         React.createElement('div', { className: 'search-results-count' }, 
-                            t('foundTopics')(searchResults.length)
+                            treeType === 'concepts' ? t('foundConcepts')(searchResults.length) : t('foundTopics')(searchResults.length)
                         )
                 ),
                 React.createElement('main', { id: 'tree-content', className: 'main-content' },
                     tree ? 
                         React.createElement(TreeView, {
-                            key: searchCounter,
+                            key: treeType + '-' + searchCounter,
                             tree: tree,
-                            defaultExpandLevel: searchResults.length > 0 ? undefined : 2,
+                            defaultExpandLevel: searchResults.length > 0 ? undefined : (treeType === 'concepts' ? 2 : 2),
                             expandedNodes: expandedNodes,
                             searchResults: searchResults,
                             searchQuery: searchQuery,

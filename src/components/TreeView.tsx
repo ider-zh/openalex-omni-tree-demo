@@ -1,13 +1,16 @@
 import { TreeNode } from '../types';
 import TreeNodeComponent from './TreeNode';
 
+type TreeType = 'topics' | 'concepts';
+
 interface TreeViewProps {
   tree: TreeNode;
   defaultExpandLevel?: number;
   expandedNodes?: Set<string>;
   searchResults?: any[];
-  loadTopicChildren?: (subfieldId: string, topicFile: string) => Promise<TreeNode[]>;
-  topicCache?: Map<string, TreeNode[]>;
+  loadItemChildren?: (subfieldId: string, filePath: string) => Promise<TreeNode[]>;
+  itemCache?: Map<string, TreeNode[]>;
+  treeType?: TreeType;
 }
 
 const TreeView: React.FC<TreeViewProps> = ({
@@ -15,8 +18,9 @@ const TreeView: React.FC<TreeViewProps> = ({
   defaultExpandLevel = 2,
   expandedNodes,
   searchResults,
-  loadTopicChildren,
-  topicCache
+  loadItemChildren,
+  itemCache,
+  treeType = 'topics'
 }) => {
   return (
     <div className="tree-view">
@@ -26,8 +30,9 @@ const TreeView: React.FC<TreeViewProps> = ({
         defaultExpandLevel={defaultExpandLevel}
         expandedNodes={expandedNodes}
         searchResults={searchResults}
-        loadTopicChildren={loadTopicChildren}
-        topicCache={topicCache}
+        loadItemChildren={loadItemChildren}
+        itemCache={itemCache}
+        treeType={treeType}
       />
     </div>
   );

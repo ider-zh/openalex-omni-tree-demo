@@ -72,14 +72,21 @@ async function fetchAllTopics() {
     
     console.log(`\nFetching complete! Total topics collected: ${allTopics.length}`);
     
-    // Save to file
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(allTopics, null, 2), 'utf8');
-    console.log(`Data saved to: ${OUTPUT_FILE}`);
+    const fetchStartTime = new Date().toISOString();
+    const outputData = {
+      version: fetchStartTime,
+      fetched_at: new Date().toISOString(),
+      total_count: allTopics.length,
+      topics: allTopics
+    };
     
-    // Save stats
+    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(outputData, null, 2), 'utf8');
+    console.log(`Data saved to: ${OUTPUT_FILE}`);
+    console.log(`Version timestamp: ${fetchStartTime}`);
+    
     const stats = {
       totalTopics: allTopics.length,
-      fetchedAt: new Date().toISOString(),
+      fetchedAt: fetchStartTime,
       domains: {}
     };
     

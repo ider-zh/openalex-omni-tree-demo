@@ -34,8 +34,9 @@
 
 ### ⚠️ 双代码源注意
 - **`index.html` 内嵌版** = 实际使用的版本（包含 i18n、主题切换等完整功能）
-- **`src/` React 版** = 开发版（Vite 构建），但 Vite 构建只包含 index.html 内容
-- 修改前端逻辑时，必须同时更新 index.html 中的内嵌代码，否则改动不生效
+- **`src/` React 版** = 开发版（Vite 构建），但不再用于生产构建
+- 修改前端逻辑时，**只需更新 index.html 中的内嵌代码**
+- 构建流程: `npm run build` → `scripts/build-copy.cjs` (复制 index.html + public/ → dist/)
 
 ### 注意
 - 原始数据需先运行爬虫或用 `scripts/reconstruct-raw-data.js` 从现有数据重建
@@ -43,3 +44,40 @@
 
 ### 后续扩展
 新增数据集时: 新建爬虫脚本(Step1) + 在 build-frontend-data 注册处理逻辑(Step2)
+
+## Concepts 数据架构 (2026-05-11)
+
+### 数据特点
+- OpenAlex Concepts API **不返回 ancestors 字段**（始终 null），无法构建父子树
+- 只能按 Level (0-5) 分组展示，每级一个 CSV 懒加载
+- 各级数量: L0(38), L1(568), L2(27605), L3(27640), L4(12994), L5(6181) = 75026 总计
+
+### 2步管线
+1. **Step 1 (爬虫)**: `npm run crawl:concepts` → `scripts/data/concepts.json`
+2. **Step 2 (构建)**: `npm run build-data:concepts` → `public/data/concepts/`
+   - `tree-skeleton.json` — 6 个 Level 节点 (L0-L5)，每个带 _concept_file
+   - `lookup.csv` — Level ID→名称映射 (6条)
+   - `search-index.csv` — 全量搜索索引 (75026条, 2.6MB, id,name,level,works_count)
+   - `concepts/level0~5.csv` — 6 个懒加载 CSV (总计 6MB)
+
+### 前端路由
+- Hash 路由: `#topics` / `#concepts`，独立加载，数据互不干扰
+- Topics 和 Concepts 各自只加载一次（模块级缓存变量）
+- 切换时通过 `window.location.hash` 触发，支持浏览器前进/后退
+
+### 数据加载策略
+- **两阶段加载**：tree skeleton (<2KB) 立即渲染，search-index.csv 按需加载
+- `loadTopicsTree()` / `loadConceptsTree()` 只加载 tree skeleton
+- `ensureSearchData(type)` 在首次搜索时才加载 search-index.csv
+- 搜索状态提示：未加载搜索索引时显示 "Loading search index..."
+
+### 概念列表分页
+- 大概念列表分页显示，默认显示 100 条
+- "Show more" 按钮加载更多 (每页 100 条)
+- concepts `defaultExpandLevel=1`（只展开 Level 节点标题）
+- topics `defaultExpandLevel=2`（展开到 field 层）
+
+### 搜索
+- Concepts 搜索路径: `[levelGroupName, conceptName]`
+- 结果限制 200 条，避免加载大 CSV
+- levelGroupName 与树骨架节点 name 一致（如 "Level 0 (Top-level concepts)"）

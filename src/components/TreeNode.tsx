@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { TreeNode } from '../types';
 
+type TreeType = 'topics' | 'concepts';
+
 interface TreeNodeComponentProps {
   node: TreeNode;
   level: number;
   defaultExpandLevel?: number;
   expandedNodes?: Set<string>;
   searchResults?: any[];
-  loadTopicChildren?: (subfieldId: string, topicFile: string) => Promise<TreeNode[]>;
-  topicCache?: Map<string, TreeNode[]>;
+  loadItemChildren?: (subfieldId: string, filePath: string) => Promise<TreeNode[]>;
+  itemCache?: Map<string, TreeNode[]>;
+  treeType?: TreeType;
 }
 
 const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
@@ -17,8 +20,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   defaultExpandLevel,
   expandedNodes,
   searchResults,
-  loadTopicChildren,
-  topicCache
+  loadItemChildren,
+  itemCache,
+  treeType = 'topics'
 }) => {
   const [isExpanded, setIsExpanded] = useState(() => {
     if (expandedNodes && expandedNodes.has(node.name)) {
@@ -30,8 +34,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const hasTopicFile = node._topic_file && loadTopicChildren;
-  const hasChildren = children.length > 0 || hasTopicFile;
+  const fileProperty = treeType === 'topics' ? '_topic_file' : '_concept_file';
+  const hasItemFile = node[fileProperty] && loadItemChildren;
+  const hasChildren = children.length > 0 || hasItemFile;
   
   const isHighlighted = searchResults && searchResults.some(r => 
     r.path.includes(node.name) || r.id === node.id
@@ -41,14 +46,15 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
     const newExpanded = !isExpanded;
     setIsExpanded(newExpanded);
 
-    if (newExpanded && hasTopicFile && !isLoaded) {
+    if (newExpanded && hasItemFile && !isLoaded) {
       setIsLoading(true);
       try {
-        const topicChildren = await loadTopicChildren!(node.id, node._topic_file!);
-        setChildren(topicChildren);
+        const filePath = treeType === 'topics' ? node._topic_file : node._concept_file;
+        const itemChildren = await loadItemChildren!(node.id, filePath!);
+        setChildren(itemChildren);
         setIsLoaded(true);
       } catch (err) {
-        console.error('Failed to load topic children:', err);
+        console.error(`Failed to load ${treeType} children:`, err);
       } finally {
         setIsLoading(false);
       }
@@ -65,6 +71,8 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
         return '📖';
       case 'topic':
         return '📄';
+      case 'concept':
+        return '💡';
       default:
         return '📁';
     }
@@ -100,8 +108,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
               defaultExpandLevel={defaultExpandLevel}
               expandedNodes={expandedNodes}
               searchResults={searchResults}
-              loadTopicChildren={loadTopicChildren}
-              topicCache={topicCache}
+              loadItemChildren={loadItemChildren}
+              itemCache={itemCache}
+              treeType={treeType}
             />
           ))}
         </div>

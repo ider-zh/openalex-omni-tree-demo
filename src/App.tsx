@@ -4,31 +4,44 @@ import { parseCSV } from './utils/csv-parser';
 import TreeView from './components/TreeView';
 import SearchBar from './components/SearchBar';
 
+type TreeType = 'topics' | 'concepts';
+
 function App() {
+  const [treeType, setTreeType] = useState<TreeType>('topics');
   const [tree, setTree] = useState<TreeNode | null>(null);
+  const [treeVersion, setTreeVersion] = useState<string>('');
+  const [treeGeneratedAt, setTreeGeneratedAt] = useState<string>('');
   const [searchData, setSearchData] = useState<SearchIndexItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [topicCache, setTopicCache] = useState<Map<string, TreeNode[]>>(new Map());
+  const [itemCache, setItemCache] = useState<Map<string, TreeNode[]>>(new Map());
 
   useEffect(() => {
     const loadData = async () => {
       try {
+        setLoading(true);
+        const dataPath = treeType === 'topics' ? '' : '/concepts';
         const [treeRes, searchCsvText] = await Promise.all([
-          fetch('/data/tree-skeleton.json').then(r => {
-            if (!r.ok) throw new Error('Failed to load tree skeleton');
+          fetch(`/data${dataPath}/tree-skeleton.json`).then(r => {
+            if (!r.ok) throw new Error(`Failed to load ${treeType} tree skeleton`);
             return r.json();
           }),
-          fetch('/data/search-index.csv').then(r => {
-            if (!r.ok) throw new Error('Failed to load search data');
+          fetch(`/data${dataPath}/search-index.csv`).then(r => {
+            if (!r.ok) throw new Error(`Failed to load ${treeType} search data`);
             return r.text();
           }),
         ]);
 
-        // 解析 CSV 搜索索引
+        if (treeRes.version) {
+          setTreeVersion(treeRes.version);
+        }
+        if (treeRes.generated_at) {
+          setTreeGeneratedAt(treeRes.generated_at);
+        }
+
         const searchRows = parseCSV(searchCsvText).map(row => ({
           id: row.id,
           name: row.name,
@@ -40,39 +53,41 @@ function App() {
 
         setTree(treeRes);
         setSearchData(searchRows);
+        setSearchResults([]);
+        setExpandedNodes(new Set());
+        setItemCache(new Map());
         setLoading(false);
       } catch (err: any) {
-        setError(err.message || 'Failed to load data');
+        setError(err.message || `Failed to load ${treeType} data`);
         setLoading(false);
       }
     };
 
     loadData();
-  }, []);
+  }, [treeType]);
 
-  const loadTopicChildren = useCallback(async (subfieldId: string, topicFile: string): Promise<TreeNode[]> => {
-    if (topicCache.has(topicFile)) {
-      return topicCache.get(topicFile)!;
+  const loadItemChildren = useCallback(async (subfieldId: string, filePath: string): Promise<TreeNode[]> => {
+    if (itemCache.has(filePath)) {
+      return itemCache.get(filePath)!;
     }
 
-    const response = await fetch(topicFile);
-    if (!response.ok) throw new Error(`Failed to load topics for ${subfieldId}`);
+    const response = await fetch(filePath);
+    if (!response.ok) throw new Error(`Failed to load ${treeType} for ${subfieldId}`);
 
-    // 解析 CSV topic 文件
     const csvText = await response.text();
-    const topics: TreeNode[] = parseCSV(csvText).map(row => ({
+    const items: TreeNode[] = parseCSV(csvText).map(row => ({
       id: row.id,
       name: row.name,
-      type: 'topic' as const,
+      type: treeType === 'topics' ? 'topic' as const : 'concept' as const,
       works_count: parseInt(row.works_count, 10) || 0,
       children: [],
     }));
 
-    setTopicCache(prev => new Map(prev).set(topicFile, topics));
-    return topics;
-  }, [topicCache]);
+    setItemCache(prev => new Map(prev).set(filePath, items));
+    return items;
+  }, [itemCache, treeType]);
 
-  const searchTopics = useCallback((query: string) => {
+  const search = useCallback((query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       setExpandedNodes(new Set());
@@ -85,7 +100,6 @@ function App() {
     const matches: SearchResult[] = [];
 
     searchData.forEach((item) => {
-      // 仅搜索 name + 层级路径（精简版，无 description/keywords）
       const searchText = `${item.name} ${item.domain} ${item.field} ${item.subfield}`.toLowerCase();
 
       if (searchText.includes(lowerQuery)) {
@@ -96,7 +110,7 @@ function App() {
           node: {
             id: item.id,
             name: item.name,
-            type: 'topic',
+            type: treeType === 'topics' ? 'topic' : 'concept',
             works_count: item.works_count,
             children: []
           }
@@ -114,12 +128,33 @@ function App() {
     setSearchResults(matches);
     setExpandedNodes(nodesToExpand);
     setIsSearching(false);
-  }, [searchData]);
+  }, [searchData, treeType]);
+
+  const getTitle = () => {
+    return treeType === 'topics' ? 'Topics' : 'Concepts';
+  };
+
+  const getSubtitle = () => {
+    return treeType === 'topics'
+      ? 'Hierarchical view of academic topics'
+      : 'Hierarchical view of academic concepts';
+  };
+
+  const getPlaceholder = () => {
+    return treeType === 'topics'
+      ? 'Search topics, domains, fields...'
+      : 'Search concepts, domains, fields...';
+  };
+
+  const getResultLabel = () => {
+    const itemType = treeType === 'topics' ? 'topic' : 'concept';
+    return `${treeType === 'topics' ? 'Found' : 'Found'} ${searchResults.length} ${itemType}${searchResults.length !== 1 ? 's' : ''}`;
+  };
 
   if (loading) {
     return (
       <div className="app">
-        <div className="loading">Loading tree data...</div>
+        <div className="loading">Loading {getTitle().toLowerCase()} tree data...</div>
       </div>
     );
   }
@@ -135,19 +170,39 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>OpenAlex Topics Tree</h1>
-        <p className="subtitle">Hierarchical view of academic topics</p>
+        <h1>OpenAlex {getTitle()} Tree</h1>
+        <p className="subtitle">{getSubtitle()}</p>
+        {(treeVersion || treeGeneratedAt) && (
+          <div className="data-version">
+            Data version: {treeVersion || 'N/A'}
+            {treeGeneratedAt && ` (Generated: ${new Date(treeGeneratedAt).toLocaleString()})`}
+          </div>
+        )}
+        <div className="tree-type-toggle">
+          <button
+            className={`toggle-btn ${treeType === 'topics' ? 'active' : ''}`}
+            onClick={() => setTreeType('topics')}
+          >
+            Topics
+          </button>
+          <button
+            className={`toggle-btn ${treeType === 'concepts' ? 'active' : ''}`}
+            onClick={() => setTreeType('concepts')}
+          >
+            Concepts
+          </button>
+        </div>
       </header>
 
       <div className="search-container">
         <SearchBar
-          onSearch={searchTopics}
-          placeholder="Search topics, domains, fields..."
+          onSearch={search}
+          placeholder={getPlaceholder()}
         />
         {isSearching && <div className="searching-indicator">Searching...</div>}
         {searchResults.length > 0 && !isSearching && (
           <div className="search-results-count">
-            Found {searchResults.length} topic{searchResults.length !== 1 ? 's' : ''}
+            {getResultLabel()}
           </div>
         )}
       </div>
@@ -158,8 +213,9 @@ function App() {
           defaultExpandLevel={searchResults.length > 0 ? undefined : 2}
           expandedNodes={expandedNodes}
           searchResults={searchResults}
-          loadTopicChildren={loadTopicChildren}
-          topicCache={topicCache}
+          loadItemChildren={loadItemChildren}
+          itemCache={itemCache}
+          treeType={treeType}
         />
       </main>
     </div>
