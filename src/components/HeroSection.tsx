@@ -3,21 +3,17 @@ import { TFunction } from '../context/I18nContext';
 interface HeroSectionProps {
   treeType: 'topics' | 'concepts';
   t: TFunction;
-  dataVersion: string;
   switchTreeType: (type: string) => void;
   currentType: string;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ treeType, t, dataVersion, switchTreeType, currentType }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ treeType, t, switchTreeType, currentType }) => {
   const isConcepts = treeType === 'concepts';
 
   return (
     <section className="hero-section">
       <h1 className="hero-title">{isConcepts ? t('conceptsTitle') : t('topicsTitle')}</h1>
       <p className="hero-subtitle">{isConcepts ? t('conceptsSubtitle') : t('topicsSubtitle')}</p>
-      {dataVersion && (
-        <div className="data-version-badge">Data: {new Date(dataVersion).toLocaleString()}</div>
-      )}
 
       <div className="tree-type-toggle">
         <button
@@ -57,10 +53,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ treeType, t, dataVersion, swi
           <div className="hierarchy-visual">
             {isConcepts ? (
               <>
-                <div className="hierarchy-level"><span className="level-icon">🌐</span>{t('hierarchyConceptsDomain')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📚</span>{t('hierarchyConceptsField')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📖</span>{t('hierarchyConceptsSubfield')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📄</span>{t('hierarchyConceptsLeaf')}</div>
+                <div className="hierarchy-level"><span className="level-icon">🌐</span>{t('hierarchyConceptsLevel0')}</div>
+                <div className="hierarchy-level"><span className="level-icon">📚</span>{t('hierarchyConceptsLevel1')}</div>
+                <div className="hierarchy-level"><span className="level-icon">📖</span>{t('hierarchyConceptsLevel2')}</div>
+                <div className="hierarchy-level"><span className="level-icon">📄</span>{t('hierarchyConceptsLevel3')}</div>
+                <div className="hierarchy-level sub-level">{t('hierarchyConceptsLevel4')}</div>
+                <div className="hierarchy-level sub-level">{t('hierarchyConceptsLevel5')}</div>
               </>
             ) : (
               <>
