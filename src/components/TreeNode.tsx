@@ -88,7 +88,10 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
             const conceptChildren: TreeNode[] = csvRows.map((row: any) => ({
               id: row.id,
               name: row.name,
-              type: parseInt(row.children_count, 10) > 0 || row._concept_file ? 'field' : 'concept',
+              // Legacy Concepts are Concepts at every numeric level. Their
+              // hierarchy is carried by `level` and parent/ancestor links, not
+              // by the newer Topics labels Domain/Field/Subfield.
+              type: 'concept' as const,
               level: row.level ? parseInt(row.level, 10) : undefined,
               works_count: parseInt(row.works_count, 10) || 0,
               children_count: parseInt(row.children_count, 10) || 0,
@@ -193,7 +196,22 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
 
     if (node.type === 'topic' || node.type === 'concept') {
       const isMatch = topicIds.has(node.id);
-      return isMatch ? (node.children || []) : [];
+      if (isMatch && node.type === 'topic') return (node.children || []);
+
+      // Concept nodes can have descendants at any numeric level. Keep the
+      // matching path alive instead of treating every Concept as a leaf.
+      if (node.type === 'concept') {
+        const validChildNames = new Set<string>();
+        searchResults.forEach((result: any) => {
+          const idx = result.path.indexOf(node.name);
+          if (idx >= 0 && idx < result.path.length - 1) {
+            validChildNames.add(result.path[idx + 1]);
+          }
+        });
+        return (children || []).filter(child => topicIds.has(child.id) || validChildNames.has(child.name));
+      }
+
+      return [];
     }
 
     const pathIndex = node.type === 'domain' ? 0 :
@@ -236,7 +254,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
       }
       return validChildNames.has(child.name);
     });
-  }, [children, searchResults, node.name, node.type, level]);
+  }, [children, searchResults, node.name, node.type, level, hasChildren, node.children]);
 
   const visibleChildren = filteredChildren.slice(0, visibleCount);
   const hasMore = filteredChildren.length > visibleCount;
