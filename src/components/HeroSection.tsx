@@ -53,12 +53,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ treeType, t, switchTreeType, 
           <div className="hierarchy-visual">
             {isConcepts ? (
               <>
-                <div className="hierarchy-level"><span className="level-icon">🌐</span>{t('hierarchyConceptsLevel0')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📚</span>{t('hierarchyConceptsLevel1')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📖</span>{t('hierarchyConceptsLevel2')}</div>
-                <div className="hierarchy-level"><span className="level-icon">📄</span>{t('hierarchyConceptsLevel3')}</div>
-                <div className="hierarchy-level sub-level">{t('hierarchyConceptsLevel4')}</div>
-                <div className="hierarchy-level sub-level">{t('hierarchyConceptsLevel5')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel0')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel1')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel2')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel3')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel4')}</div>
+                <div className="hierarchy-level">{t('hierarchyConceptsLevel5')}</div>
               </>
             ) : (
               <>
